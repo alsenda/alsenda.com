@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary palette (EGA-inspired) */
+  --background: #222326; /* dark charcoal */
+  --surface: #2b2b2d;
+  --foreground: #e6e6e6; /* main text */
+  --muted: #9aa0a6; /* secondary text */
+  --ega-cyan: 34,211,238; /* stored as rgb components for rgba usage */
+  --ega-magenta: 244,114,182;
+  --ega-white: 255,255,255;
 }
 
 @theme inline {
@@ -14,8 +20,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* already dark by default; keep variables consistent for dark mode */
+    --background: #222326;
+    --foreground: #e6e6e6;
   }
 }
 
@@ -23,4 +30,63 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Map some Tailwind classes to our palette so existing markup stays unchanged */
+.bg-black { background-color: var(--background) !important; }
+.bg-gray-900 { background-color: var(--surface) !important; }
+.text-white { color: rgb(var(--ega-white)) !important; }
+.text-cyan-300 { color: rgb(var(--ega-cyan)) !important; }
+.text-cyan-400 { color: rgb(var(--ega-cyan)) !important; }
+.text-pink-400 { color: rgb(var(--ega-magenta)) !important; }
+.text-magenta-400 { color: rgb(var(--ega-magenta)) !important; }
+.border-cyan-400 { border-color: rgb(var(--ega-cyan)) !important; }
+.border-magenta-500 { border-color: rgb(var(--ega-magenta)) !important; }
+.hover\:text-cyan-400:hover { color: rgb(var(--ega-cyan)) !important; }
+.hover\:text-pink-400:hover { color: rgb(var(--ega-magenta)) !important; }
+.hover\:border-white:hover { border-color: rgb(var(--ega-white)) !important; }
+
+/* subtle link style to match CV */
+a { color: rgb(var(--ega-cyan)); text-decoration: none; }
+a:hover { color: rgb(var(--ega-magenta)); }
+
+/* Muted text */
+.text-slate-300, .text-slate-400, .text-zinc-400 { color: var(--muted) !important; }
+
+/* Footer and decorative boxes */
+.border-yellow-300 { border-color: rgb(var(--ega-white)) !important; }
+.text-yellow-300 { color: rgb(var(--ega-white)) !important; }
+
+/* 3D header variables and effect - subtle, reactive to mouse position */
+:root {
+  /* normalized mouse position -1 .. 1 */
+  --mx: 0;
+  --my: 0;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--foreground);
+  position: relative;
+  transition: text-shadow 120ms ease, transform 120ms ease;
+  /* Use element-level variables when available, fall back to root --mx/--my */
+  --mx-local: calc(var(--mx, 0));
+  --my-local: calc(var(--my, 0));
+  
+  /* stronger 3D tilt using perspective+rotate for a noticeable effect */
+  transform: perspective(900px) rotateX(calc(var(--my-local) * 9deg)) rotateY(calc(var(--mx-local) * 12deg)) translate3d(calc(var(--mx-local) * -12px), calc(var(--my-local) * -12px), 0);
+  will-change: text-shadow, transform;
+}
+
+/* Intensify effect on hover - the header "leans" toward the pointer */
+h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
+  transform: perspective(1000px) rotateX(calc(var(--my-local) * 12deg)) rotateY(calc(var(--mx-local) * 16deg)) translate3d(calc(var(--mx-local) * -6px), calc(var(--my-local) * -6px), 0) scale(1.03);
+}
+
+/* Small responsive fallback for very small screens */
+@media (max-width: 640px) {
+  h1, h2, h3, h4, h5, h6 {
+    text-shadow: none;
+    transform: none;
+  }
 }

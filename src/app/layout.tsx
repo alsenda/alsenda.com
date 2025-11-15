@@ -27,6 +27,61 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `;(function(){
+  try {
+    const root = document.documentElement;
+
+    function updateRootFromEvent(e){
+      const t = e.touches && e.touches[0] ? e.touches[0] : e;
+      const cx = t.clientX || (window.innerWidth/2);
+      const cy = t.clientY || (window.innerHeight/2);
+      const x = ((cx / window.innerWidth) - 0.5) * 2; // -1..1
+      const y = ((cy / window.innerHeight) - 0.5) * -2; // invert y
+      root.style.setProperty('--mx', x);
+      root.style.setProperty('--my', y);
+    }
+
+    // per-element (local) mouse reaction for headers
+    function attachHeaderListeners(){
+      const els = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
+      els.forEach(el => {
+        let rect = null;
+        function onMove(e){
+          const t = e.touches && e.touches[0] ? e.touches[0] : e;
+          rect = rect || el.getBoundingClientRect();
+          const cx = t.clientX;
+          const cy = t.clientY;
+          const x = ((cx - rect.left) / rect.width - 0.5) * 2; // -1..1
+          const y = ((cy - rect.top) / rect.height - 0.5) * -2; // invert y
+          el.style.setProperty('--mx', x);
+          el.style.setProperty('--my', y);
+        }
+        function onLeave(){
+          el.style.setProperty('--mx', '0');
+          el.style.setProperty('--my', '0');
+          rect = null;
+        }
+        el.addEventListener('mousemove', onMove);
+        el.addEventListener('mouseleave', onLeave);
+        el.addEventListener('touchmove', onMove, {passive:true});
+        el.addEventListener('touchend', onLeave);
+      });
+    }
+
+    window.addEventListener('mousemove', updateRootFromEvent);
+    window.addEventListener('touchmove', updateRootFromEvent, {passive:true});
+    // Attach listeners after DOM is ready
+    if (document.readyState === 'complete' || document.readyState === 'interactive'){
+      attachHeaderListeners();
+    } else {
+      document.addEventListener('DOMContentLoaded', attachHeaderListeners);
+    }
+  } catch (err) { console.error(err); }
+})();`
+          }}
+        />
         {children}
       </body>
     </html>
