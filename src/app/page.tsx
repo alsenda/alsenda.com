@@ -1,4 +1,4 @@
-export default function Home() {
+﻿export default function Home() {
   const applications = [
     {
       name: "App 1",
@@ -21,27 +21,27 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+    <div className="min-h-screen bg-black text-white font-mono">
       {/* Navigation */}
-      <nav className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
+      <nav className="border-b-4 border-cyan-400 bg-black sticky top-0 z-50 shadow-lg shadow-cyan-500/50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            Alsenda
+          <h1 className="text-3xl font-bold text-cyan-400 tracking-widest" style={{textShadow: "0 0 10px rgba(34, 211, 238, 0.8)"}}>
+            ALSENDA
           </h1>
-          <ul className="flex gap-6">
+          <ul className="flex gap-8">
             <li>
-              <a href="#portfolio" className="hover:text-blue-400 transition">
-                Portfolio
+              <a href="#portfolio" className="text-white hover:text-pink-400 transition font-bold">
+                [PORTFOLIO]
               </a>
             </li>
             <li>
-              <a href="#about" className="hover:text-blue-400 transition">
-                About
+              <a href="#about" className="text-white hover:text-pink-400 transition font-bold">
+                [ABOUT]
               </a>
             </li>
             <li>
-              <a href="#contact" className="hover:text-blue-400 transition">
-                Contact
+              <a href="#contact" className="text-white hover:text-pink-400 transition font-bold">
+                [CONTACT]
               </a>
             </li>
           </ul>
@@ -49,36 +49,48 @@ export default function Home() {
       </nav>
 
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-6 py-20">
+      <section className="max-w-6xl mx-auto px-6 pt-16">
         <div className="text-center">
-          <h2 className="text-5xl font-bold mb-6">Welcome to My Portfolio</h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Explore my collection of web applications and projects. Each application runs on its own subdomain.
+          <div className="mb-4 text-2xl text-cyan-400" style={{textShadow: "0 0 15px rgba(34, 211, 238, 0.6)"}}>
+            
+          </div>
+          <h2 className="text-4xl font-bold mb-6 text-pink-400 tracking-wider" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
+            WELCOME TO MY PORTFOLIO
+          </h2>
+          <p className="text-lg text-cyan-300 mb-4 max-w-2xl mx-auto">
+            &gt; EXPLORE MULTIPLE WEB APPLICATIONS ON SUBDOMAINS
           </p>
+          <div className="text-2xl text-white" style={{textShadow: "0 0 15px rgba(255, 255, 255, 0.6)"}}>
+            ═
+          </div>
         </div>
       </section>
 
       {/* Applications Section */}
       <section id="portfolio" className="max-w-6xl mx-auto px-6 py-16">
-        <h3 className="text-3xl font-bold mb-12 text-center">Applications</h3>
+        <h3 className="text-2xl font-bold mb-12 text-center text-white tracking-wider" style={{textShadow: "0 0 10px rgba(255, 255, 255, 0.8)"}}>
+          [ APPLICATIONS ]
+        </h3>
         <div className="grid md:grid-cols-3 gap-6">
           {applications.map((app) => (
             <div
               key={app.subdomain}
-              className="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-blue-500 transition hover:shadow-lg hover:shadow-blue-500/10"
+              className="bg-black border-2 border-cyan-400 p-6 hover:border-white transition hover:shadow-lg hover:shadow-white/50 hover:bg-gray-950"
+              style={{boxShadow: "0 0 10px rgba(34, 211, 238, 0.3)"}}
             >
-              <h4 className="text-xl font-semibold mb-2">{app.name}</h4>
-              <p className="text-slate-400 mb-4">{app.description}</p>
-              <p className="text-sm text-slate-500 mb-4">
-                Subdomain: <code className="bg-slate-700 px-2 py-1 rounded">{app.subdomain}.alsenda.com</code>
+              <h4 className="text-lg font-bold mb-2 text-pink-400">{">"} {app.name.toUpperCase()}</h4>
+              <p className="text-cyan-300 mb-4 text-sm">{app.description}</p>
+              <p className="text-xs text-white mb-4 font-mono">
+                $ {app.subdomain}.alsenda.com
               </p>
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-400">{app.status}</span>
+              <div className="flex items-center justify-between mt-6 pt-4 border-t border-cyan-400">
+                <span className="text-xs font-bold text-magenta-400">{app.status}</span>
                 <a
-                  href={`https://${app.subdomain}.alsenda.local`}
-                  className="text-blue-400 hover:text-blue-300 transition"
+                  href="https://alsenda.com"
+                  className="text-white hover:text-cyan-400 font-bold transition text-sm"
+                  style={{textShadow: "0 0 5px rgba(255, 255, 255, 0.6)"}}
                 >
-                  Visit →
+                  [VISIT]
                 </a>
               </div>
             </div>
@@ -87,33 +99,45 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-700">
-        <h3 className="text-3xl font-bold mb-8">About This Portfolio</h3>
+      <section id="about" className="max-w-6xl mx-auto px-6 py-16">
+        <h3 className="text-2xl font-bold mb-8 text-pink-400 tracking-wider" style={{textShadow: "0 0 10px rgba(244, 114, 182, 0.8)"}}>
+          [ ABOUT THIS PORTFOLIO ]
+        </h3>
         <div className="grid md:grid-cols-2 gap-8">
           <div>
-            <p className="text-slate-300 mb-4">
-              This is a Next.js powered portfolio that serves as a central hub for multiple web applications.
+            <p className="text-cyan-300 mb-4 font-mono text-sm leading-relaxed">
+              &gt; This is a Next.js powered portfolio serving as a<br/>
+              &gt; central hub for multiple web applications.
             </p>
-            <p className="text-slate-300">
-              Each application runs on its own subdomain, providing a clean and organized way to showcase different projects.
+            <p className="text-cyan-300 font-mono text-sm leading-relaxed">
+              &gt; Each application runs on its own subdomain,<br/>
+              &gt; providing clean organization of projects.
             </p>
           </div>
-          <div className="bg-slate-800 border border-slate-700 rounded-lg p-6">
-            <h4 className="font-semibold mb-4">Technology Stack</h4>
-            <ul className="space-y-2 text-slate-300">
-              <li>• Next.js 14+ (React Framework)</li>
-              <li>• TypeScript</li>
-              <li>• Tailwind CSS</li>
-              <li>• Subdomain Routing</li>
+          <div className="bg-black border-2 border-white p-6" style={{boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"}}>
+            <h4 className="font-bold mb-4 text-white tracking-wider">[ TECH STACK ]</h4>
+            <ul className="space-y-2 text-cyan-400 font-mono text-sm">
+              <li className="text-magenta-400">&gt; Next.js 14+ (React Framework)</li>
+              <li className="text-magenta-400">&gt; TypeScript</li>
+              <li className="text-magenta-400">&gt; Tailwind CSS</li>
+              <li className="text-magenta-400">&gt; Subdomain Routing</li>
             </ul>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="border-t border-slate-700 bg-slate-900/50 py-8 mt-16">
-        <div className="max-w-6xl mx-auto px-6 text-center text-slate-400">
-          <p>© 2025 Alsenda Portfolio. Built with Next.js.</p>
+      <footer id="contact" className="border-t-4 border-magenta-500 bg-black py-8 mt-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center text-cyan-400 font-mono text-sm mb-4">
+            
+          </div>
+       <div className="text-center text-white font-bold mb-4">
+         2025 ALSENDA PORTFOLIO | BUILT WITH NEXT.JS
+       </div>
+          <div className="text-center text-cyan-400 font-mono text-sm">
+            
+          </div>
         </div>
       </footer>
     </div>
