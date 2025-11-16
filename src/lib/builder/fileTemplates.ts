@@ -80,9 +80,14 @@ module.exports = nextConfig
     'app/layout.tsx': layoutTsx(),
     'app/head.tsx': headTsx(),
     'components/Header.tsx': headerComponent(),
+    'components/Button.tsx': buttonComponent(),
+    'components/Footer.tsx': footerComponent(),
+    'app/api/hello/route.ts': apiHello(),
     'tailwind.config.js': tailwindConfig(),
     'postcss.config.cjs': postcssConfig(),
     'next.config.js': nextConfig,
+    '.gitignore': gitignore(),
+    'tsconfig.json': tsconfigJson(),
   };
 
   // Add minimal GitHub workflow if deploying to Vercel would be typical
@@ -160,5 +165,62 @@ function postcssConfig(): string {
 `;
 }
 
+function gitignore(): string {
+  return `node_modules
+.next
+dist
+/.env.local
+`;
+}
+
+function tsconfigJson(): string {
+  return `{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["DOM", "ES2020"],
+    "jsx": "react-jsx",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+`;
+}
+
+function buttonComponent(): string {
+  return `import React from 'react'
+
+export default function Button({children, onClick}:{children: React.ReactNode, onClick?: ()=>void}){
+  return (
+    <button onClick={onClick} style={{background:'#06b6d4',color:'#001',padding:'8px 12px',borderRadius:6,fontFamily:'monospace'}}>{children}</button>
+  )
+}
+`;
+}
+
+function footerComponent(): string {
+  return `import React from 'react'
+
+export default function Footer(){
+  return (
+    <footer style={{padding:20,textAlign:'center',color:'#6ee7b7'}}>Built with Alsenda App Wizard</footer>
+  )
+}
+`;
+}
+
+function apiHello(): string {
+  return `import { NextResponse } from 'next/server'
+
+export async function GET() {
+  return NextResponse.json({ hello: 'world' })
+}
+`;
+}
 
 export default generateFiles;
