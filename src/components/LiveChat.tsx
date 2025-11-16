@@ -149,7 +149,7 @@ export default function LiveChat(): React.ReactElement {
       </div>
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-black border border-cyan-400 p-4 rounded">
+          <div className="bg-black border border-cyan-400 p-4">
             <div className="mb-2 text-white">Choose a username (letters and numbers only):</div>
             <input className="p-2 mb-2 bg-black border border-cyan-400 text-white" value={modalValue} onChange={e => setModalValue(e.target.value)} />
             <div className="flex gap-2 justify-end">

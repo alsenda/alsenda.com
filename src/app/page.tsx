@@ -68,10 +68,6 @@ export default function Home() {
               &gt; This is a Next.js powered portfolio serving as a<br/>
               &gt; central hub for multiple web applications.
             </p>
-            <p className="text-cyan-300 font-mono text-sm leading-relaxed">
-              &gt; Each application runs on its own subdomain,<br/>
-              &gt; providing clean organization of projects.
-            </p>
           </div>
           <div className="bg-black border-2 border-white p-6" style={{boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"}}>
             <h4 className="font-bold mb-4 text-white tracking-wider">[ TECH STACK ]</h4>
@@ -79,7 +75,7 @@ export default function Home() {
               <li className="text-magenta-400">&gt; Next.js 14+ (React Framework)</li>
               <li className="text-magenta-400">&gt; TypeScript</li>
               <li className="text-magenta-400">&gt; Tailwind CSS</li>
-              <li className="text-magenta-400">&gt; Subdomain Routing</li>
+              <li className="text-magenta-400">&gt; Redis</li>
             </ul>
           </div>
         </div>

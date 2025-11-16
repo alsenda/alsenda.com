@@ -7,7 +7,6 @@ A modern Next.js portfolio application that serves as a central hub for multiple
 Alsenda is a portfolio project built with Next.js 14+, TypeScript, and Tailwind CSS. It features:
 
 - **Main Portfolio**: A landing page showcasing your applications and skills
-- **Subdomain Routing**: Each application runs on its own subdomain (app1, app2, app3, etc.)
 - **Responsive Design**: Mobile-friendly layout with dark mode support
 - **Easy Customization**: Well-structured components for adding new applications
 

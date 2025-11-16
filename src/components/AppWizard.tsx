@@ -98,13 +98,13 @@ export default function AppWizard(): React.ReactElement {
             <span className="hero-caret">▌</span>
           </h2>
           <div>
-            <button className="px-4 h-12 inline-flex items-center bg-cyan-700 text-white font-bold rounded" onClick={handleCreateAndDownload} disabled={zipping}>
+            <button className="px-4 h-12 inline-flex items-center bg-white text-cyan-400 font-bold" onClick={handleCreateAndDownload} disabled={zipping}>
               {zipping ? 'Creating...' : 'Create & Download'}
             </button>
           </div>
         </div>
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-black/60 p-4 border border-cyan-700 rounded">
+          <div className="bg-black/60 p-4 border border-cyan-400">
             <div className="space-y-3">
               <label className="block text-xs text-slate-300">Frontend framework</label>
               <select value={cfg.frontend} onChange={e => setCfg({ ...cfg, frontend: e.target.value as AppConfig['frontend'] })} className="w-full p-2 bg-black border border-cyan-600">
@@ -146,15 +146,15 @@ export default function AppWizard(): React.ReactElement {
             </div>
           </div>
 
-          <div className="bg-black/60 p-4 border border-pink-600 rounded">
+          <div className="bg-black/60 p-4 border border-magenta-500">
             <h3 className="text-sm text-slate-300 mb-2">Architecture summary</h3>
-            <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40 rounded">{result.summary}</pre>
+            <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40">{result.summary}</pre>
             <h3 className="text-sm text-slate-300 mt-3 mb-2">Folder tree</h3>
-            <div className="text-xs font-mono bg-black/40 p-2 rounded">
+            <div className="text-xs font-mono bg-black/40 p-2">
               {result.folderTree.map((f, i) => <div key={i}>{f}</div>)}
             </div>
             <div className="mt-3 flex items-center gap-2">
-              <button className="px-3 py-1 bg-cyan-700 rounded text-sm" onClick={handleCreateAndDownload} disabled={zipping}>
+              <button className="px-3 py-1 bg-cyan-700 text-sm" onClick={handleCreateAndDownload} disabled={zipping}>
                 {zipping ? 'Creating ZIP...' : 'Create & Download'}
               </button>
               {zipError && <span className="text-xs text-red-400">Error: {zipError}</span>}

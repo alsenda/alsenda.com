@@ -21,7 +21,7 @@ export default function App2() {
 
       <div className="grid md:grid-cols-3 gap-6 mt-16">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-cyan-800 border border-cyan-700 rounded-lg p-6">
+          <div key={i} className="bg-cyan-800 border border-cyan-700 p-6">
             <h3 className="text-lg font-semibold mb-2">Feature {i}</h3>
             <p className="text-cyan-200">
               Add your application features and content here.
