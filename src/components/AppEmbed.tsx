@@ -57,7 +57,7 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
       </section>
 
       {openApp === 'app1' && (
-        <section className={`max-w-6xl mx-auto px-6 py-12 ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
+        <section className={`max-w-6xl mx-auto px-6 py-12 crt-flicker-continuous ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
           <div className="mb-4">
             <button className="text-sm text-cyan-400 underline" onClick={handleCloseApp}>Close app</button>
           </div>
@@ -66,7 +66,7 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
       )}
 
       {openApp === 'app2' && (
-        <section className={`max-w-6xl mx-auto px-6 py-12 ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
+        <section className={`max-w-6xl mx-auto px-6 py-12 crt-flicker-continuous ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
           <div className="mb-4">
             <button className="text-sm text-cyan-400 underline" onClick={handleCloseApp}>Close app</button>
           </div>

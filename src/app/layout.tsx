@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import CRTPageTransition from "@/components/CRTPageTransition";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -226,7 +227,9 @@ export default function RootLayout({
           }}
         />
         <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
-        {children}
+        <CRTPageTransition>
+          {children}
+        </CRTPageTransition>
       </body>
     </html>
   );
