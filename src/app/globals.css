@@ -233,6 +233,85 @@ html[data-three-d="true"] h6:hover {
   }
 }
 
+/* CRT Monitor Turn-On Animation */
+@keyframes crtTurnOn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+    filter: brightness(0);
+  }
+  10% {
+    filter: brightness(0.3);
+  }
+  30% {
+    opacity: 0.8;
+    filter: brightness(0.8);
+    transform: scale(1.02) translateY(0);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+  70% {
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* CRT Monitor Turn-Off Animation */
+@keyframes crtTurnOff {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1);
+  }
+  20% {
+    opacity: 0.8;
+    filter: brightness(0.8);
+  }
+  50% {
+    opacity: 0.3;
+    filter: brightness(0.3);
+  }
+  80% {
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.85) translateY(20px);
+    filter: brightness(0);
+  }
+}
+
+/* CRT Scanline flicker during turn-on */
+@keyframes crtScanlineFlicker {
+  0%, 100% { opacity: 1; }
+  20% { opacity: 0.3; }
+  40% { opacity: 0.8; }
+  60% { opacity: 0.4; }
+  80% { opacity: 0.9; }
+}
+
+/* Apply CRT turn-on animation */
+.crt-turn-on {
+  animation: crtTurnOn 800ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Apply CRT turn-on with scanline glitch */
+.crt-turn-on-glitch {
+  animation: crtTurnOn 800ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+            crtScanlineFlicker 800ms steps(8) forwards;
+}
+
+/* Apply CRT turn-off animation */
+.crt-turn-off {
+  animation: crtTurnOff 600ms cubic-bezier(0.36, 0, 0.66, -0.56) forwards;
+}
+
 /* Reduce-motion toggle styles and reduced-motion behavior */
 .motion-toggle {
   position: fixed;

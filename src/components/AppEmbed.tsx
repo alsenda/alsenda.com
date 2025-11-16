@@ -9,6 +9,16 @@ type AppDef = { name: string; description: string; subdomain: string; status: st
 
 export default function AppEmbed({ applications }: { applications: AppDef[] }) {
   const [openApp, setOpenApp] = useState<string | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+
+  const handleCloseApp = () => {
+    setIsClosing(true);
+    // Wait for animation to complete before clearing
+    setTimeout(() => {
+      setOpenApp(null);
+      setIsClosing(false);
+    }, 600);
+  };
 
   return (
     <>
@@ -47,18 +57,18 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
       </section>
 
       {openApp === 'app1' && (
-        <section className="max-w-6xl mx-auto px-6 py-12">
+        <section className={`max-w-6xl mx-auto px-6 py-12 ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
           <div className="mb-4">
-            <button className="text-sm text-cyan-400 underline" onClick={() => setOpenApp(null)}>Close app</button>
+            <button className="text-sm text-cyan-400 underline" onClick={handleCloseApp}>Close app</button>
           </div>
           <AppWizard />
         </section>
       )}
 
       {openApp === 'app2' && (
-        <section className="max-w-6xl mx-auto px-6 py-12">
+        <section className={`max-w-6xl mx-auto px-6 py-12 ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
           <div className="mb-4">
-            <button className="text-sm text-cyan-400 underline" onClick={() => setOpenApp(null)}>Close app</button>
+            <button className="text-sm text-cyan-400 underline" onClick={handleCloseApp}>Close app</button>
           </div>
           <LiveChat />
         </section>
