@@ -1,4 +1,6 @@
-﻿export default function Home() {
+﻿import LiveChat from '../components/LiveChat';
+
+export default function Home() {
   const applications = [
     {
       name: "App 1",
@@ -68,6 +70,9 @@
           </div>
         </div>
       </section>
+
+  {/* Live chat */}
+  <LiveChat />
 
       {/* Applications Section */}
       <section id="portfolio" className="max-w-6xl mx-auto px-6 py-16">
