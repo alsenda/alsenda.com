@@ -15,7 +15,12 @@ export default function LiveChat(): React.ReactElement {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalValue, setModalValue] = useState('');
   const polling = useRef<number | null>(null);
+  const wsRef = useRef<WebSocket | null>(null);
+  const MAX_MESSAGE_LENGTH = 500;
 
   function getStoredUsername(): string | null {
     try { return localStorage.getItem(USER_KEY); } catch (e) { return null; }
@@ -37,45 +42,69 @@ export default function LiveChat(): React.ReactElement {
   useEffect(() => {
     fetchMessages();
     polling.current = window.setInterval(fetchMessages, 2000);
-    return () => { if (polling.current) clearInterval(polling.current); };
+    // websocket connection for real-time updates
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `ws://${location.hostname}:4001`;
+    try {
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+      ws.addEventListener('message', (ev) => {
+        try {
+          const msg = JSON.parse(ev.data) as ChatMessage;
+          setMessages(prev => {
+            // append and keep only last 24h (server-side also prunes)
+            return [...prev, msg];
+          });
+        } catch (e) {}
+      });
+    } catch (e) {
+      // ignore
+    }
+
+    return () => {
+      if (polling.current) clearInterval(polling.current);
+      if (wsRef.current) { wsRef.current.close(); wsRef.current = null; }
+    };
   }, []);
 
   function ensureUsername(): string | null {
     let u = getStoredUsername();
-    if (u && USERNAME_RE.test(u)) return u;
-    // prompt the user for a username
-    // loop until valid or cancelled
-    while (true) {
-      const val = window.prompt('Enter a username (letters and numbers only):');
-      if (val === null) return null;
-      const trimmed = val.trim();
-      if (USERNAME_RE.test(trimmed)) { setStoredUsername(trimmed); return trimmed; }
+    if (u && USERNAME_RE.test(u)) { setUsername(u); return u; }
+    return null;
+  }
+
+  function openUsernameModal() {
+    const stored = getStoredUsername();
+    setModalValue(stored || '');
+    setShowModal(true);
+  }
+
+  function submitModal() {
+    const v = modalValue.trim();
+    if (!USERNAME_RE.test(v)) {
       alert('Invalid username. Only letters and numbers allowed, no spaces or symbols.');
+      return;
     }
+    setStoredUsername(v);
+    setUsername(v);
+    setShowModal(false);
   }
 
   async function handleSubmit(e?: React.FormEvent) {
     e?.preventDefault();
     if (!text.trim()) return;
-    let username = getStoredUsername();
-    if (!username) {
-      const u = ensureUsername();
-      if (!u) return; // user cancelled
-      username = u;
-    }
-    if (!USERNAME_RE.test(username)) {
-      // Reset and ask again
-      localStorage.removeItem(USER_KEY);
-      const u = ensureUsername();
-      if (!u) return;
-      username = u;
+    if (text.length > MAX_MESSAGE_LENGTH) { alert('Message too long'); return; }
+    let uname = username || ensureUsername();
+    if (!uname) {
+      // open modal to ask for username
+      openUsernameModal();
+      return;
     }
     setLoading(true);
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, text }),
+        body: JSON.stringify({ username: uname, text }),
       });
       const data = await res.json();
       if (data && data.ok) {
@@ -106,6 +135,22 @@ export default function LiveChat(): React.ReactElement {
           ))
         )}
       </div>
+      <div className="flex items-center gap-3 mt-2 mb-4">
+        <div className="text-slate-300 text-sm">{username ? `User: ${username}` : 'You are anonymous'}</div>
+        <button onClick={() => openUsernameModal()} className="text-xs text-white underline">Set / Edit username</button>
+      </div>
+      {showModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-black border border-cyan-400 p-4 rounded">
+            <div className="mb-2 text-white">Choose a username (letters and numbers only):</div>
+            <input className="p-2 mb-2 bg-black border border-cyan-400 text-white" value={modalValue} onChange={e => setModalValue(e.target.value)} />
+            <div className="flex gap-2 justify-end">
+              <button onClick={() => setShowModal(false)} className="px-3 py-1">Cancel</button>
+              <button onClick={() => submitModal()} className="px-3 py-1 bg-pink-400 text-black font-bold">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           className="flex-1 p-2 bg-black border border-cyan-400 text-white"
