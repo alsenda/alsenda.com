@@ -38,21 +38,49 @@ export default function AppWizard(): React.ReactElement {
 
   const [zipping, setZipping] = useState(false);
   const [zipError, setZipError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number | null>(null);
+  const [progressMsg, setProgressMsg] = useState<string | null>(null);
 
   async function handleCreateAndDownload() {
     setZipError(null);
     setZipping(true);
+    setProgress(null);
+    setProgressMsg(null);
     try {
-      const blob = await fetchZipFromServer(cfg);
+      // init job
+      const initResp = await fetch('/api/generate-zip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cfg) });
+      if (!initResp.ok) throw new Error(await initResp.text());
+      const { jobId } = await initResp.json();
+
+      // subscribe to SSE progress
+      const es = new EventSource(`/api/generate-zip/progress?jobId=${jobId}`);
+      es.onmessage = (ev) => {
+        try {
+          const data = JSON.parse(ev.data);
+          if (data.pct != null) setProgress(data.pct);
+          if (data.file) setProgressMsg(String(data.file));
+        } catch (e) {
+          // ignore
+        }
+      };
+
+      // start download
+      const dlResp = await fetch('/api/generate-zip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ jobId }) });
+      if (!dlResp.ok) {
+        const err = await dlResp.text();
+        es.close();
+        throw new Error(err || `Server returned ${dlResp.status}`);
+      }
+      const blob = await dlResp.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      // attempt to read name from generated package.json via server filename header fallback
       a.download = `${cfg.frontend || 'app'}-project.zip`;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
+      es.close();
     } catch (err: any) {
       console.error('Create & download failed', err);
       setZipError(err?.message || String(err));
@@ -120,6 +148,9 @@ export default function AppWizard(): React.ReactElement {
                 {zipping ? 'Creating ZIP...' : 'Create & Download'}
               </button>
               {zipError && <span className="text-xs text-red-400">Error: {zipError}</span>}
+            </div>
+            <div className="mt-2">
+              {progress != null && <div className="text-xs text-cyan-300 font-mono">Progress: {progress}% {progressMsg ? ` — ${progressMsg}` : ''}</div>}
             </div>
           </div>
         </div>
