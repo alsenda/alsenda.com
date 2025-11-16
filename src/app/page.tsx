@@ -1,4 +1,5 @@
 ﻿import LiveChat from '../components/LiveChat';
+import AppEmbed from '../components/AppEmbed';
 
 export default function Home() {
   const applications = [
@@ -57,37 +58,8 @@ export default function Home() {
       {/* Live chat */}
       <LiveChat />
 
-      {/* Applications Section */}
-      <section id="portfolio" className="max-w-6xl mx-auto px-6 py-16">
-        <h3 className="text-2xl font-bold mb-12 text-center text-white tracking-wider" style={{textShadow: "0 0 10px rgba(255, 255, 255, 0.8)"}}>
-          [ APPLICATIONS ]
-        </h3>
-        <div className="grid md:grid-cols-3 gap-6">
-          {applications.map((app) => (
-            <div
-              key={app.subdomain}
-              className="tilt-card bg-black border-2 border-cyan-400 p-6 hover:border-white transition hover:shadow-lg hover:shadow-white/50 hover:bg-gray-950"
-              style={{boxShadow: "0 0 10px rgba(34, 211, 238, 0.3)"}}
-            >
-              <h4 className="text-lg font-bold mb-2 text-pink-400">{">"} {app.name.toUpperCase()}</h4>
-              <p className="text-cyan-300 mb-4 text-sm">{app.description}</p>
-              <p className="text-xs text-white mb-4 font-mono">
-                $ {app.subdomain}.alsenda.com
-              </p>
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-cyan-400">
-                <span className="text-xs font-bold text-magenta-400">{app.status}</span>
-                <a
-                  href={`/${app.subdomain}`}
-                  className="text-white hover:text-cyan-400 font-bold transition text-sm"
-                  style={{textShadow: "0 0 5px rgba(255, 255, 255, 0.6)"}}
-                >
-                  [VISIT]
-                </a>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* Applications Section rendered by client component to support inline app opening */}
+      <AppEmbed applications={applications} />
 
       {/* About Section */}
       <section id="about" className="max-w-6xl mx-auto px-6 py-16">
