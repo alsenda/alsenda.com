@@ -22,8 +22,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Feature flag: enable 3D headers when NEXT_PUBLIC_ENABLE_3D === 'true'
+  const enableThreeD = process.env.NEXT_PUBLIC_ENABLE_3D === 'true';
   return (
-    <html lang="en">
+    <html lang="en" data-three-d={enableThreeD}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
@@ -70,8 +72,8 @@ export default function RootLayout({
       });
     }
 
-    window.addEventListener('mousemove', updateRootFromEvent);
-    window.addEventListener('touchmove', updateRootFromEvent, {passive:true});
+  // Pointer-driven root updates and per-header listeners are conditional
+  // and will be attached only when data-three-d === 'true'.
 
     // simple typewriter for hero
     function startHeroTypewriter(){
@@ -199,7 +201,21 @@ export default function RootLayout({
     }
 
     // Attach listeners after DOM is ready
-    function onReady(){ attachHeaderListeners(); startHeroTypewriter(); initParticles(); attachTiltCards(); initReduceMotionToggle(); }
+    function onReady(){
+      try{
+        const threeD = document.documentElement.getAttribute('data-three-d') === 'true';
+        if (threeD){
+          window.addEventListener('mousemove', updateRootFromEvent);
+          window.addEventListener('touchmove', updateRootFromEvent, {passive:true});
+          attachHeaderListeners();
+        }
+      }catch(e){}
+      // always start these regardless of 3D flag
+      startHeroTypewriter();
+      initParticles();
+      attachTiltCards();
+      initReduceMotionToggle();
+    }
     if (document.readyState === 'complete' || document.readyState === 'interactive'){
       onReady();
     } else {

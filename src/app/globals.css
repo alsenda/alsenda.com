@@ -69,7 +69,7 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -3;
   background: linear-gradient(120deg, rgba(var(--ega-cyan),0.07), rgba(var(--ega-magenta),0.06), rgba(var(--ega-white),0.02));
   background-size: 400% 400%;
   opacity: 1;
@@ -173,7 +173,13 @@ body::after {
 }
 
 
-h1, h2, h3, h4, h5, h6 {
+/* 3D header styles are opt-in via the data attribute `data-three-d="true"` on <html> */
+html[data-three-d="true"] h1,
+html[data-three-d="true"] h2,
+html[data-three-d="true"] h3,
+html[data-three-d="true"] h4,
+html[data-three-d="true"] h5,
+html[data-three-d="true"] h6 {
   color: var(--foreground);
   position: relative;
   transition: text-shadow 120ms ease, transform 120ms ease;
@@ -187,7 +193,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Intensify effect on hover - the header "leans" toward the pointer */
-h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
+html[data-three-d="true"] h1:hover,
+html[data-three-d="true"] h2:hover,
+html[data-three-d="true"] h3:hover,
+html[data-three-d="true"] h4:hover,
+html[data-three-d="true"] h5:hover,
+html[data-three-d="true"] h6:hover {
   transform: perspective(1000px) rotateX(calc(var(--my-local) * 12deg)) rotateY(calc(var(--mx-local) * 16deg)) translate3d(calc(var(--mx-local) * -6px), calc(var(--my-local) * -6px), 0) scale(1.03);
 }
 
