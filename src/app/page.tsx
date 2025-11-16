@@ -22,8 +22,10 @@
 
   return (
     <div className="min-h-screen bg-black text-white font-mono">
-      {/* visual overlay for scanlines/CRT */}
-      <div className="overlay-scanlines" aria-hidden="true" />
+  {/* particle canvas sits behind gradient + scanlines */}
+  <canvas id="particle-canvas" className="particle-canvas" aria-hidden="true"></canvas>
+  {/* visual overlay for scanlines/CRT */}
+  <div className="overlay-scanlines" aria-hidden="true" />
       {/* Navigation */}
       <nav className="border-b-4 border-cyan-400 bg-black sticky top-0 z-50 shadow-lg shadow-cyan-500/50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -76,7 +78,7 @@
           {applications.map((app) => (
             <div
               key={app.subdomain}
-              className="bg-black border-2 border-cyan-400 p-6 hover:border-white transition hover:shadow-lg hover:shadow-white/50 hover:bg-gray-950"
+              className="tilt-card bg-black border-2 border-cyan-400 p-6 hover:border-white transition hover:shadow-lg hover:shadow-white/50 hover:bg-gray-950"
               style={{boxShadow: "0 0 10px rgba(34, 211, 238, 0.3)"}}
             >
               <h4 className="text-lg font-bold mb-2 text-pink-400">{">"} {app.name.toUpperCase()}</h4>

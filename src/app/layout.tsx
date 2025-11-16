@@ -43,7 +43,7 @@ export default function RootLayout({
       root.style.setProperty('--my', y);
     }
 
-  // per-element (local) mouse reaction for headers
+    // per-element (local) mouse reaction for headers
     function attachHeaderListeners(){
       const els = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
       els.forEach(el => {
@@ -72,12 +72,7 @@ export default function RootLayout({
 
     window.addEventListener('mousemove', updateRootFromEvent);
     window.addEventListener('touchmove', updateRootFromEvent, {passive:true});
-    // Attach listeners after DOM is ready
-    if (document.readyState === 'complete' || document.readyState === 'interactive'){
-      attachHeaderListeners();
-    } else {
-      document.addEventListener('DOMContentLoaded', attachHeaderListeners);
-    }
+
     // simple typewriter for hero
     function startHeroTypewriter(){
       const el = document.getElementById('hero-type');
@@ -111,15 +106,110 @@ export default function RootLayout({
       }
       tick();
     }
+
+    /* Particle system (lightweight) */
+    function initParticles(){
+      const canvas = document.getElementById('particle-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = 0, h = 0, particles = [], raf = null;
+      function resize(){ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+      function makeParticles(){
+        particles = [];
+        const count = Math.min(120, Math.floor((w * h) / 60000));
+        for(let i=0;i<count;i++){
+          particles.push({
+            x: Math.random()*w,
+            y: Math.random()*h,
+            r: 0.6 + Math.random()*1.8,
+            vx: (Math.random()-0.5)*0.2,
+            vy: (Math.random()-0.5)*0.2,
+            alpha: 0.08 + Math.random()*0.22
+          });
+        }
+      }
+      function step(){
+        if (document.documentElement.dataset.reduceMotion === 'true'){
+          ctx.clearRect(0,0,w,h);
+          raf = requestAnimationFrame(step);
+          return;
+        }
+        ctx.clearRect(0,0,w,h);
+        for(const p of particles){
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < -10) p.x = w + 10; if (p.x > w + 10) p.x = -10;
+          if (p.y < -10) p.y = h + 10; if (p.y > h + 10) p.y = -10;
+          ctx.beginPath();
+          try{
+            var cval = getComputedStyle(document.documentElement).getPropertyValue('--ega-cyan').trim();
+            ctx.fillStyle = 'rgba(' + cval + ', ' + p.alpha + ')';
+          } catch(e){
+            ctx.fillStyle = 'rgba(255,255,255,' + p.alpha + ')';
+          }
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+          ctx.fill();
+        }
+        raf = requestAnimationFrame(step);
+      }
+      function start(){
+        resize(); makeParticles();
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(step);
+      }
+      window.addEventListener('resize', ()=>{ resize(); makeParticles(); });
+      start();
+    }
+
+    /* Tilt handlers for .tilt-card elements */
+    function attachTiltCards(){
+      const cards = document.querySelectorAll('.tilt-card');
+      cards.forEach(card => {
+        function onMove(e){
+          const t = e.touches && e.touches[0] ? e.touches[0] : e;
+          const rect = card.getBoundingClientRect();
+          const cx = t.clientX - rect.left;
+          const cy = t.clientY - rect.top;
+          const x = ((cx / rect.width) - 0.5) * 2; // -1..1
+          const y = ((cy / rect.height) - 0.5) * -2;
+          card.style.setProperty('--tcx', x);
+          card.style.setProperty('--tcy', y);
+        }
+        function onLeave(){ card.style.setProperty('--tcx', '0'); card.style.setProperty('--tcy', '0'); }
+        card.addEventListener('pointermove', onMove);
+        card.addEventListener('pointerleave', onLeave);
+        card.addEventListener('touchmove', onMove, {passive:true});
+      });
+    }
+
+    /* Reduce-motion toggle: set html[data-reduce-motion] and persist */
+    function initReduceMotionToggle(){
+      const btn = document.getElementById('motion-toggle');
+      if (!btn) return;
+      const root = document.documentElement;
+      const saved = localStorage.getItem('alsenda-reduce-motion');
+      if (saved) root.setAttribute('data-reduce-motion', saved);
+      function updateBtn(){ btn.setAttribute('aria-pressed', root.getAttribute('data-reduce-motion') === 'true' ? 'true' : 'false'); }
+      btn.addEventListener('click', ()=>{
+        const next = root.getAttribute('data-reduce-motion') === 'true' ? 'false' : 'true';
+        root.setAttribute('data-reduce-motion', next);
+        localStorage.setItem('alsenda-reduce-motion', next);
+        updateBtn();
+      });
+      updateBtn();
+    }
+
+    // Attach listeners after DOM is ready
+    function onReady(){ attachHeaderListeners(); startHeroTypewriter(); initParticles(); attachTiltCards(); initReduceMotionToggle(); }
     if (document.readyState === 'complete' || document.readyState === 'interactive'){
-      startHeroTypewriter();
+      onReady();
     } else {
-      document.addEventListener('DOMContentLoaded', startHeroTypewriter);
+      document.addEventListener('DOMContentLoaded', onReady);
     }
   } catch (err) { console.error(err); }
 })();`
           }}
         />
+        <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
         {children}
       </body>
     </html>

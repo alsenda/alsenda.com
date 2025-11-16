@@ -198,3 +198,38 @@ h1:hover, h2:hover, h3:hover, h4:hover, h5:hover, h6:hover {
     transform: none;
   }
 }
+
+/* Reduce-motion toggle styles and reduced-motion behavior */
+.motion-toggle {
+  position: fixed;
+  left: 12px;
+  bottom: 12px;
+  z-index: 9999;
+  background: rgba(var(--ega-white), 0.06);
+  color: rgb(var(--ega-white));
+  border: 1px solid rgba(var(--ega-white), 0.08);
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+.motion-toggle[aria-pressed="true"] {
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6), 0 0 12px rgba(var(--ega-magenta),0.12);
+}
+
+/* When reduce-motion is enabled, pause/hide heavy animations and the particle canvas */
+html[data-reduce-motion="true"] .particle-canvas {
+  display: none !important;
+}
+html[data-reduce-motion="true"] * {
+  animation-play-state: paused !important;
+  transition-duration: 0.001ms !important;
+}
+html[data-reduce-motion="true"] .hero-caret { animation-play-state: paused !important; opacity: 1; }
+html[data-reduce-motion="true"] .glitch--active { animation-play-state: paused !important; }
+
+/* Slightly lower particle opacity on small screens */
+@media (max-width: 640px) {
+  .particle-canvas { opacity: 0.32; }
+}
