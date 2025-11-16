@@ -57,6 +57,74 @@ a:hover { color: rgb(var(--ega-magenta)); }
 .border-yellow-300 { border-color: rgb(var(--ega-white)) !important; }
 .text-yellow-300 { color: rgb(var(--ega-white)) !important; }
 
+/* --- Standout effects: animated gradient, scanlines, CRT glow, neon links --- */
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(120deg, rgba(var(--ega-cyan),0.07), rgba(var(--ega-magenta),0.06), rgba(var(--ega-white),0.02));
+  background-size: 400% 400%;
+  opacity: 1;
+  mix-blend-mode: screen;
+  animation: gradientShift 18s ease infinite;
+  pointer-events: none;
+}
+
+/* subtle CRT scanlines overlay */
+.overlay-scanlines {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background-image: linear-gradient(rgba(0,0,0,0.06) 50%, rgba(255,255,255,0.02) 50%);
+  background-size: 100% 3px;
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+}
+
+/* light vignette + subtle noise using radial gradients */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, rgba(0,0,0,0.5) 75%);
+  pointer-events: none;
+}
+
+/* Neon link glow on hover */
+.neon-link {
+  transition: text-shadow 220ms ease, color 160ms ease;
+}
+.neon-link:hover {
+  text-shadow: 0 0 10px rgba(var(--ega-cyan),0.8), 0 0 24px rgba(var(--ega-magenta),0.35);
+  color: rgb(var(--ega-white));
+}
+
+/* Hero caret */
+.hero-caret {
+  display: inline-block;
+  margin-left: 8px;
+  color: rgb(var(--ega-white));
+  opacity: 0.95;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0 } }
+
+/* Make overlay slightly weaker on mobile */
+@media (max-width: 640px) {
+  .overlay-scanlines { opacity: 0.3; }
+  body::before { opacity: 0.6; }
+}
+
 /* 3D header variables and effect - subtle, reactive to mouse position */
 :root {
   /* normalized mouse position -1 .. 1 */

@@ -22,6 +22,8 @@
 
   return (
     <div className="min-h-screen bg-black text-white font-mono">
+      {/* visual overlay for scanlines/CRT */}
+      <div className="overlay-scanlines" aria-hidden="true" />
       {/* Navigation */}
       <nav className="border-b-4 border-cyan-400 bg-black sticky top-0 z-50 shadow-lg shadow-cyan-500/50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -55,7 +57,7 @@
             
           </div>
           <h2 className="text-4xl font-bold mb-6 text-pink-400 tracking-wider" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
-            WELCOME TO MY PORTFOLIO
+            WELCOME TO MY PORTFOLIO <span className="hero-caret">▌</span>
           </h2>
           <p className="text-lg text-cyan-300 mb-4 max-w-2xl mx-auto">
             &gt; EXPLORE MULTIPLE WEB APPLICATIONS ON SUBDOMAINS
