@@ -4,9 +4,9 @@ export default function Home() {
   const applications = [
     {
       name: "App 1",
-      description: "Your first application",
+      description: "Create‑Your‑Own App Wizard — interactive generator",
       subdomain: "app1",
-      status: "Coming Soon",
+      status: "Live",
     },
     {
       name: "App 2",
@@ -77,7 +77,7 @@ export default function Home() {
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-cyan-400">
                 <span className="text-xs font-bold text-magenta-400">{app.status}</span>
                 <a
-                  href="https://alsenda.com"
+                  href={`/${app.subdomain}`}
                   className="text-white hover:text-cyan-400 font-bold transition text-sm"
                   style={{textShadow: "0 0 5px rgba(255, 255, 255, 0.6)"}}
                 >
