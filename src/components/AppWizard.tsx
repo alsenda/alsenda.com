@@ -2,6 +2,23 @@
 import React, { useEffect, useState } from 'react';
 import type { AppConfig } from '../lib/builder/types';
 import { configToProject } from '../lib/builder';
+import generateFiles from '../lib/builder/fileTemplates';
+
+// Helper to call server ZIP endpoint that streams a generated ZIP
+async function fetchZipFromServer(cfg: Record<string, any>) {
+  const resp = await fetch('/api/generate-zip', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(cfg),
+  });
+  if (!resp.ok) {
+    const err = await resp.text();
+    throw new Error(err || `Server returned ${resp.status}`);
+  }
+  // Receive the zip as a blob
+  const blob = await resp.blob();
+  return blob;
+}
 
 const DEFAULT_CONFIG: AppConfig = {
   frontend: 'next',
@@ -18,6 +35,31 @@ export default function AppWizard(): React.ReactElement {
   useEffect(() => {
     setResult(configToProject(cfg));
   }, [cfg]);
+
+  const [zipping, setZipping] = useState(false);
+  const [zipError, setZipError] = useState<string | null>(null);
+
+  async function handleCreateAndDownload() {
+    setZipError(null);
+    setZipping(true);
+    try {
+      const blob = await fetchZipFromServer(cfg);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      // attempt to read name from generated package.json via server filename header fallback
+      a.download = `${cfg.frontend || 'app'}-project.zip`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error('Create & download failed', err);
+      setZipError(err?.message || String(err));
+    } finally {
+      setZipping(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-900 to-black text-white p-6 rounded-lg">
@@ -68,10 +110,16 @@ export default function AppWizard(): React.ReactElement {
 
           <div className="bg-black/60 p-4 border border-pink-600 rounded">
             <h3 className="text-sm text-slate-300 mb-2">Architecture summary</h3>
-            <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40 rounded h-44 overflow-auto">{result.summary}</pre>
+            <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40 rounded">{result.summary}</pre>
             <h3 className="text-sm text-slate-300 mt-3 mb-2">Folder tree</h3>
-            <div className="text-xs font-mono bg-black/40 p-2 rounded h-28 overflow-auto">
+            <div className="text-xs font-mono bg-black/40 p-2 rounded">
               {result.folderTree.map((f, i) => <div key={i}>{f}</div>)}
+            </div>
+            <div className="mt-3 flex items-center gap-2">
+              <button className="px-3 py-1 bg-cyan-700 rounded text-sm" onClick={handleCreateAndDownload} disabled={zipping}>
+                {zipping ? 'Creating ZIP...' : 'Create & Download'}
+              </button>
+              {zipError && <span className="text-xs text-red-400">Error: {zipError}</span>}
             </div>
           </div>
         </div>
