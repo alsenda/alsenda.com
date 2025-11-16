@@ -3,20 +3,20 @@
 export default function Home() {
   const applications = [
     {
-      name: "App 1",
-      description: "Create‑Your‑Own App Wizard — interactive generator",
+      name: "App Wizard",
+      description: "Create‑Your‑Own App Generator — build custom applications interactively",
       subdomain: "app1",
       status: "Live",
     },
     {
-      name: "App 2",
-      description: "Your second application",
+      name: "Live Chat",
+      description: "Real-time messaging platform with WebSocket support and chat history",
       subdomain: "app2",
-      status: "Coming Soon",
+      status: "Live",
     },
     {
-      name: "App 3",
-      description: "Your third application",
+      name: "Coming Soon",
+      description: "A new application is in development",
       subdomain: "app3",
       status: "Coming Soon",
     },

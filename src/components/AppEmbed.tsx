@@ -39,7 +39,6 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
             >
               <h4 className="text-lg font-bold mb-2 text-pink-400">{">"} {app.name.toUpperCase()}</h4>
               <p className="text-cyan-300 mb-4 text-sm">{app.description}</p>
-              <p className="text-xs text-white mb-4 font-mono">$ {app.subdomain}.alsenda.com</p>
               <div className="flex items-center justify-between mt-6 pt-4 border-t border-cyan-400">
                 <span className="text-xs font-bold text-magenta-400">{app.status}</span>
                 <a
