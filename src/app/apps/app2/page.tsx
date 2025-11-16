@@ -1,3 +1,5 @@
+import LiveChat from '../../../components/LiveChat';
+
 export default function App2() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-900 via-cyan-800 to-cyan-900 text-white">
@@ -27,6 +29,10 @@ export default function App2() {
               </p>
             </div>
           ))}
+        </div>
+        
+        <div className="mt-12">
+          <LiveChat />
         </div>
       </div>
     </div>

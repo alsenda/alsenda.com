@@ -94,11 +94,11 @@ export default function AppWizard(): React.ReactElement {
       <div className="max-w-6xl mx-auto px-6 py-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
-            <span style={{color: 'rgb(var(--ega-cyan))'}}>als</span><span style={{color: 'rgb(var(--ega-magenta))'}}>en</span><span style={{color: 'rgb(var(--ega-white))'}}>da</span>
+            <span style={{color: 'rgb(var(--ega-cyan))'}}>Create</span><span style={{color: 'rgb(var(--ega-magenta))'}}> App</span><span style={{color: 'rgb(var(--ega-white))'}}> Wizard</span>
             <span className="hero-caret">▌</span>
           </h2>
           <div>
-            <button className="px-4 h-12 inline-flex items-center bg-cyan-700 text-black font-bold rounded" onClick={handleCreateAndDownload} disabled={zipping}>
+            <button className="px-4 h-12 inline-flex items-center bg-cyan-700 text-white font-bold rounded" onClick={handleCreateAndDownload} disabled={zipping}>
               {zipping ? 'Creating...' : 'Create & Download'}
             </button>
           </div>

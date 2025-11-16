@@ -1,5 +1,4 @@
-﻿import LiveChat from '../components/LiveChat';
-import AppEmbed from '../components/AppEmbed';
+﻿import AppEmbed from '../components/AppEmbed';
 
 export default function Home() {
   const applications = [
@@ -55,10 +54,7 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Live chat */}
-      <LiveChat />
-
-      {/* Applications Section rendered by client component to support inline app opening */}
+  {/* Applications Section rendered by client component to support inline app opening */}
       <AppEmbed applications={applications} />
 
       {/* About Section */}

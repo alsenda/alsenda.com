@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 
 const AppWizard = dynamic(() => import('./AppWizard'), { ssr: false });
+const LiveChat = dynamic(() => import('./LiveChat'), { ssr: false });
 
 type AppDef = { name: string; description: string; subdomain: string; status: string };
 
@@ -50,9 +51,16 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
           <div className="mb-4">
             <button className="text-sm text-cyan-400 underline" onClick={() => setOpenApp(null)}>Close app</button>
           </div>
-          <div className="bg-black/80 p-6 rounded border border-cyan-500">
-            <AppWizard />
+          <AppWizard />
+        </section>
+      )}
+
+      {openApp === 'app2' && (
+        <section className="max-w-6xl mx-auto px-6 py-12">
+          <div className="mb-4">
+            <button className="text-sm text-cyan-400 underline" onClick={() => setOpenApp(null)}>Close app</button>
           </div>
+          <LiveChat />
         </section>
       )}
     </>
