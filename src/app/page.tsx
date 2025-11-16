@@ -31,8 +31,8 @@ export default function Home() {
       {/* Navigation */}
       <nav className="border-b-4 border-cyan-400 bg-black sticky top-0 z-50 shadow-lg shadow-cyan-500/50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-cyan-400 tracking-widest" style={{textShadow: "0 0 10px rgba(34, 211, 238, 0.8)"}}>
-            ALSENDA
+          <h1 className="text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
+            alsenda<span className="hero-caret">▌</span>
           </h1>
           <ul className="flex gap-8">
             <li>
@@ -54,25 +54,8 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-6 pt-16">
-        <div className="text-center">
-          <div className="mb-4 text-2xl text-cyan-400" style={{textShadow: "0 0 15px rgba(34, 211, 238, 0.6)"}}>
-          </div>
-          <h2 className="text-4xl font-bold mb-6 text-pink-400 tracking-wider glitch" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
-            WELCOME TO MY PORTFOLIO <span className="hero-caret">▌</span>
-          </h2>
-          <p className="text-lg text-cyan-300 mb-4 max-w-2xl mx-auto">
-            <span className="typewriter" id="hero-type"></span>
-          </p>
-          <div className="text-2xl text-white" style={{textShadow: "0 0 15px rgba(255, 255, 255, 0.6)"}}>
-            ═
-          </div>
-        </div>
-      </section>
-
-  {/* Live chat */}
-  <LiveChat />
+      {/* Live chat */}
+      <LiveChat />
 
       {/* Applications Section */}
       <section id="portfolio" className="max-w-6xl mx-auto px-6 py-16">
