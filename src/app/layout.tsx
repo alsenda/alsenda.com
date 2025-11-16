@@ -43,7 +43,7 @@ export default function RootLayout({
       root.style.setProperty('--my', y);
     }
 
-    // per-element (local) mouse reaction for headers
+  // per-element (local) mouse reaction for headers
     function attachHeaderListeners(){
       const els = document.querySelectorAll('h1,h2,h3,h4,h5,h6');
       els.forEach(el => {
@@ -77,6 +77,44 @@ export default function RootLayout({
       attachHeaderListeners();
     } else {
       document.addEventListener('DOMContentLoaded', attachHeaderListeners);
+    }
+    // simple typewriter for hero
+    function startHeroTypewriter(){
+      const el = document.getElementById('hero-type');
+      if (!el) return;
+      const phrases = [
+        'Full‑stack web developer',
+        'Retro UI & UX enthusiast',
+        'EGA-inspired designs',
+        'Subdomain-powered apps'
+      ];
+      let pi = 0, ci = 0, deleting = false;
+      function tick(){
+        const phrase = phrases[pi];
+        if (!deleting){
+          ci++;
+          el.textContent = phrase.slice(0, ci);
+          if (ci === phrase.length){
+            deleting = true;
+            setTimeout(tick, 900);
+            return;
+          }
+        } else {
+          ci--;
+          el.textContent = phrase.slice(0, ci);
+          if (ci === 0){
+            deleting = false;
+            pi = (pi + 1) % phrases.length;
+          }
+        }
+        setTimeout(tick, deleting ? 60 : 90 + Math.random()*80);
+      }
+      tick();
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive'){
+      startHeroTypewriter();
+    } else {
+      document.addEventListener('DOMContentLoaded', startHeroTypewriter);
     }
   } catch (err) { console.error(err); }
 })();`

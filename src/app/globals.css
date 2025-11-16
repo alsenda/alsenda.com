@@ -125,6 +125,46 @@ body::after {
   body::before { opacity: 0.6; }
 }
 
+/* Particle canvas sits behind the gradient and scanlines */
+.particle-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* Card tilt variables and effect (set by JS per-card) */
+.tilt-card {
+  --tcx: 0; /* -1..1 */
+  --tcy: 0;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+  transform: perspective(900px) rotateX(calc(var(--tcy) * 6deg)) rotateY(calc(var(--tcx) * -8deg)) translateZ(0);
+}
+.tilt-card:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+
+/* Header glitch animation */
+@keyframes headerGlitch {
+  0% { transform: translate3d(0,0,0); }
+  20% { transform: translate3d(-4px,0,0); filter: hue-rotate(5deg); }
+  40% { transform: translate3d(3px,-1px,0); filter: hue-rotate(-5deg); }
+  60% { transform: translate3d(-2px,1px,0); }
+  80% { transform: translate3d(1px,0,0); }
+  100% { transform: translate3d(0,0,0); }
+}
+.glitch { display: inline-block; }
+.glitch--active { animation: headerGlitch 420ms linear; }
+
+/* Typewriter text */
+.typewriter {
+  display: inline-block;
+  border-right: 2px solid rgba(var(--ega-white),0.9);
+  padding-right: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
 /* 3D header variables and effect - subtle, reactive to mouse position */
 :root {
   /* normalized mouse position -1 .. 1 */

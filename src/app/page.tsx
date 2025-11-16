@@ -54,13 +54,12 @@
       <section className="max-w-6xl mx-auto px-6 pt-16">
         <div className="text-center">
           <div className="mb-4 text-2xl text-cyan-400" style={{textShadow: "0 0 15px rgba(34, 211, 238, 0.6)"}}>
-            
           </div>
-          <h2 className="text-4xl font-bold mb-6 text-pink-400 tracking-wider" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
+          <h2 className="text-4xl font-bold mb-6 text-pink-400 tracking-wider glitch" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
             WELCOME TO MY PORTFOLIO <span className="hero-caret">▌</span>
           </h2>
           <p className="text-lg text-cyan-300 mb-4 max-w-2xl mx-auto">
-            &gt; EXPLORE MULTIPLE WEB APPLICATIONS ON SUBDOMAINS
+            <span className="typewriter" id="hero-type"></span>
           </p>
           <div className="text-2xl text-white" style={{textShadow: "0 0 15px rgba(255, 255, 255, 0.6)"}}>
             ═
