@@ -5,6 +5,7 @@ import type { AppConfig } from '../../../../src/lib/builder/types';
 import { Readable } from 'stream';
 import { getJob, createJob, removeJob } from '../../../../src/lib/zipJobs';
 import { v4 as uuidv4 } from 'uuid';
+import getRedis from '../../../lib/redis';
 
 // Simple runtime validation
 function isValidConfig(obj: any): obj is AppConfig {
@@ -16,26 +17,27 @@ function isValidConfig(obj: any): obj is AppConfig {
   return obj && frontends.includes(obj.frontend) && data.includes(obj.dataLayer) && db.includes(obj.database) && auth.includes(obj.auth) && deploy.includes(obj.deploy);
 }
 
-// In-memory rate limiter per IP
-const rateMap = new Map<string, { count: number; windowStart: number }>();
-const WINDOW_MS = 60 * 60 * 1000; // 1 hour
-const LIMIT = 10; // max in window
+// Rate limiting configuration
+const WINDOW_SEC = 60 * 60; // 1 hour
+const LIMIT = 10; // max jobs per window per IP
 
-function checkRate(ip: string) {
-  const now = Date.now();
-  const rec = rateMap.get(ip) || { count: 0, windowStart: now };
-  if (now - rec.windowStart > WINDOW_MS) {
-    rec.count = 0; rec.windowStart = now;
+async function checkRateRedis(ip: string): Promise<boolean> {
+  const redis = getRedis();
+  if (!redis) return true; // allow through if no redis configured (fallback)
+  const key = `zip:rate:${ip}`;
+  const val = await redis.incr(key);
+  if (val === 1) {
+    await redis.expire(key, WINDOW_SEC);
   }
-  rec.count += 1;
-  rateMap.set(ip, rec);
-  return rec.count <= LIMIT;
+  return val <= LIMIT;
 }
 
 export async function POST(req: Request) {
   try {
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
-    if (!checkRate(ip)) {
+    const ipRaw = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
+    const ip = String(ipRaw).split(',')[0].trim();
+    const ok = await checkRateRedis(ip);
+    if (!ok) {
       return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), { status: 429, headers: { 'Content-Type': 'application/json' } });
     }
 
