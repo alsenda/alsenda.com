@@ -90,7 +90,7 @@ export default function AppWizard(): React.ReactElement {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-mono">
+    <div className="bg-black text-white font-mono">
       <div className="max-w-6xl mx-auto px-6 py-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
