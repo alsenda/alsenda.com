@@ -85,10 +85,32 @@ body::before {
   z-index: 60;
   pointer-events: none;
   /* stronger CRT scanlines for a more visible effect */
-  background-image: linear-gradient(rgba(0,0,0,0.12) 50%, rgba(255,255,255,0.03) 50%);
-  background-size: 100% 2px;
+  /* denser dark lines with a faint bright line, smaller spacing for a CRT look */
+  background-image: linear-gradient(rgba(0,0,0,0.22) 50%, rgba(255,255,255,0.04) 50%);
+  background-size: 100% 1.6px;
   mix-blend-mode: overlay;
-  opacity: 0.85;
+  opacity: 0.95;
+  /* subtle vertical jitter to simulate a screen wobble */
+  animation: scanlineFlicker 3s steps(3) infinite;
+}
+
+@keyframes scanlineFlicker {
+  0% { transform: translateY(0); opacity: 0.92; }
+  25% { transform: translateY(0.2px); opacity: 0.98; }
+  50% { transform: translateY(-0.3px); opacity: 0.94; }
+  75% { transform: translateY(0.1px); opacity: 0.97; }
+  100% { transform: translateY(0); opacity: 0.92; }
+}
+
+/* Add a faint film-grain overlay for texture */
+.overlay-scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px), radial-gradient(rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 3px 3px, 6px 6px;
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 /* light vignette + subtle noise using radial gradients */
