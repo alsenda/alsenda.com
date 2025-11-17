@@ -40,6 +40,12 @@ export default function LiveChat(): React.ReactElement {
   }
 
   useEffect(() => {
+    // Load username from localStorage on mount
+    const stored = getStoredUsername();
+    if (stored && USERNAME_RE.test(stored)) {
+      setUsername(stored);
+    }
+
     fetchMessages();
     polling.current = window.setInterval(fetchMessages, 2000);
     // websocket connection for real-time updates
