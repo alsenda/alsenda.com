@@ -156,12 +156,23 @@ function generateThemeFromDescription(description: string): ThemeTokens {
   // Extract colors from description
   const colors = extractColorsFromDescription(lowerDesc);
   
-  // Determine if it's a dark or light theme
-  const isDark = !lowerDesc.includes("light") && !lowerDesc.includes("bright");
+  // Determine if it's a dark or light theme - be more explicit about detecting light
+  const hasLightKeyword = lowerDesc.includes("light") || 
+                          lowerDesc.includes("bright") || 
+                          lowerDesc.includes("airy") ||
+                          lowerDesc.includes("clean") ||
+                          lowerDesc.includes("white");
+  const hasDarkKeyword = lowerDesc.includes("dark") || 
+                         lowerDesc.includes("night") || 
+                         lowerDesc.includes("black");
+  
+  // Default to dark unless light is explicitly mentioned
+  const isDark = hasDarkKeyword ? true : !hasLightKeyword;
   
   // Generate theme based on extracted colors
-  if (colors.length >= 2) {
-    const [primary, secondary] = colors;
+  if (colors.length >= 1) {
+    const primary = colors[0];
+    const secondary = colors[1] || colors[0]; // Use same color twice if only one found
     const background = isDark ? "#0a0e1a" : "#f5f7fa";
     const surface = isDark ? "#151925" : "#ffffff";
     const foreground = isDark ? "#e6e6e6" : "#1e2430";
@@ -174,14 +185,14 @@ function generateThemeFromDescription(description: string): ThemeTokens {
         muted: isDark ? "#9aa0a6" : "#5d6b7a",
         egaCyan: hexToRgb(primary),
         egaMagenta: hexToRgb(secondary),
-        egaWhite: isDark ? "255,255,255" : "0,0,0",
+        egaWhite: isDark ? "255,255,255" : "30,36,48", // Use dark color for "white" in light themes
       },
       effects: {
         borderRadius: "0.5rem",
         shadowColor: isDark ? "rgba(0,0,0,0.6)" : "rgba(0,0,0,0.1)",
         shadowBlur: "20px",
         glowIntensity: isDark ? "0.8" : "0.4",
-        textShadow: `0 0 10px rgba(${hexToRgb(primary)},0.8), 0 0 24px rgba(${hexToRgb(secondary)},0.35)`,
+        textShadow: `0 0 10px rgba(${hexToRgb(primary)},${isDark ? "0.8" : "0.4"}), 0 0 24px rgba(${hexToRgb(secondary)},${isDark ? "0.35" : "0.2"})`,
       },
       typography: {
         fontFamily: "Arial, Helvetica, sans-serif",
@@ -190,8 +201,8 @@ function generateThemeFromDescription(description: string): ThemeTokens {
       },
       backgroundArt: {
         gradientColors: [
-          `rgba(${hexToRgb(primary)},0.07)`,
-          `rgba(${hexToRgb(secondary)},0.06)`,
+          `rgba(${hexToRgb(primary)},${isDark ? "0.07" : "0.05"})`,
+          `rgba(${hexToRgb(secondary)},${isDark ? "0.06" : "0.04"})`,
           isDark ? "rgba(255,255,255,0.02)" : "rgba(0,0,0,0.05)",
         ],
         particleOpacity: isDark ? "0.45" : "0.25",
@@ -200,7 +211,39 @@ function generateThemeFromDescription(description: string): ThemeTokens {
     };
   }
 
-  // Default to a variation of the current theme if no colors found
+  // If no colors found but light theme requested, return a light default
+  if (!isDark) {
+    return {
+      colors: {
+        background: "#f5f7fa",
+        surface: "#ffffff",
+        foreground: "#1e2430",
+        muted: "#5d6b7a",
+        egaCyan: "37,99,235", // blue
+        egaMagenta: "168,85,247", // purple
+        egaWhite: "30,36,48", // dark for light theme
+      },
+      effects: {
+        borderRadius: "0.5rem",
+        shadowColor: "rgba(0,0,0,0.1)",
+        shadowBlur: "20px",
+        glowIntensity: "0.4",
+        textShadow: "0 0 8px rgba(37,99,235,0.4), 0 0 16px rgba(168,85,247,0.2)",
+      },
+      typography: {
+        fontFamily: "Arial, Helvetica, sans-serif",
+        headingWeight: "600",
+        bodyWeight: "400",
+      },
+      backgroundArt: {
+        gradientColors: ["rgba(37,99,235,0.05)", "rgba(168,85,247,0.04)", "rgba(0,0,0,0.05)"],
+        particleOpacity: "0.25",
+        scanlineOpacity: "0.35",
+      },
+    };
+  }
+
+  // Default dark variation if nothing else matches
   return {
     colors: {
       background: "#1a1a2e",
@@ -289,19 +332,19 @@ async function generateWithOpenAI(description: string): Promise<ThemeTokens | nu
 
   const system = `You are a UI theme generator. Output ONLY a JSON object that matches this TypeScript type, no prose:\n\n{
   "colors": {
-    "background": string,            // hex color like "#0a0e1a"
-    "surface": string,               // hex color
-    "foreground": string,            // hex color
-    "muted": string,                 // hex color
-    "egaCyan": string,               // rgb tuple string like "34,211,238"
-    "egaMagenta": string,            // rgb tuple string
-    "egaWhite": string               // rgb tuple string
+    "background": string,            // hex color like "#0a0e1a" (dark) or "#f5f7fa" (light)
+    "surface": string,               // hex color (slightly lighter/darker than background)
+    "foreground": string,            // hex color (text color - dark on light bg, light on dark bg)
+    "muted": string,                 // hex color (secondary text)
+    "egaCyan": string,               // rgb tuple string like "34,211,238" - use for primary accent
+    "egaMagenta": string,            // rgb tuple string - use for secondary accent
+    "egaWhite": string               // rgb tuple string - use for highlights
   },
   "effects"?: {
     "borderRadius"?: string,
     "shadowColor"?: string,
     "shadowBlur"?: string,
-    "glowIntensity"?: string,
+    "glowIntensity"?: string,        // 0..1 as string
     "textShadow"?: string
   },
   "typography"?: {
@@ -314,9 +357,9 @@ async function generateWithOpenAI(description: string): Promise<ThemeTokens | nu
     "particleOpacity"?: string,      // 0..1 as string
     "scanlineOpacity"?: string       // 0..1 as string
   }
-}\n\nRules:\n- Base on a CRT/EGA retro aesthetic unless user explicitly asks otherwise.\n- Keep contrasts accessible.\n- Use hex for solid colors and rgb tuple strings for ega* fields.\n- Keep output strictly valid JSON.`;
+}\n\nCritical Rules:\n1. ALWAYS respect the user's request for light vs dark themes explicitly\n2. If user mentions "light" or "bright": use light backgrounds (#e-f range), dark foregrounds (#0-3 range)\n3. If user mentions specific colors (blue, purple, orange, etc.): use those colors in egaCyan and egaMagenta\n4. Keep contrasts accessible (WCAG AA minimum)\n5. Use hex for solid colors and rgb tuple strings for ega* fields\n6. Default to retro/CRT aesthetic ONLY if user doesn't specify otherwise\n7. Keep output strictly valid JSON`;
 
-  const user = `Theme description: ${description}`;
+  const user = `Generate a theme based on this description. Pay close attention to any color names and light/dark preferences:\n\n${description}`;
 
   const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
