@@ -6,15 +6,15 @@ export default function CRTPageTransition({
 }: {
   children: React.ReactNode;
 }): React.ReactElement {
-  const [isLoading, setIsLoading] = useState(true);
+  const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    // Trigger animation on mount
-    setIsLoading(false);
+    // Trigger turn-on animation on mount
+    setAnimate(true);
   }, []);
 
   return (
-    <div className={`${isLoading ? 'crt-turn-off' : 'crt-turn-on'} crt-flicker-continuous`}>
+    <div className={`${animate ? 'crt-turn-on' : ''} crt-flicker-continuous`}>
       {children}
     </div>
   );
