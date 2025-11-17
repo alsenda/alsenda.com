@@ -326,7 +326,6 @@ html[data-three-d="true"] h6:hover {
 
 /* Theme and motion toggle styles */
 .theme-toggle {
-  position: fixed;
   right: 8px;
   top: 8px;
   z-index: 9999;
@@ -416,7 +415,7 @@ html[data-theme="crt-green"] {
 
 /* CRT green theme adjustments */
 html[data-theme="crt-green"] body {
-  background: #000000;
+  background: #002211;
   color: #33ff33;
 }
 

@@ -46,7 +46,7 @@ export default function Home() {
                 [ABOUT]
               </a>
             </li>
-            <li className="ml-8">
+            <li>
               <ThemeToggle />
             </li>
           </ul>
