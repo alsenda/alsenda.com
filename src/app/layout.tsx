@@ -234,10 +234,12 @@ export default function RootLayout({
 })();`
           }}
         />
-        <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
-        <CRTPageTransition>
-          {children}
-        </CRTPageTransition>
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+          <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
+          <CRTPageTransition>
+            {children}
+          </CRTPageTransition>
+        </div>
       </body>
     </html>
   );

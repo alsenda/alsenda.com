@@ -2,7 +2,7 @@ import LiveChat from '../../../components/LiveChat';
 
 export default function App2() {
   return (
-    <div className="max-w-6xl mx-auto px-6">
+  <div className="max-w-[1200px] mx-auto px-6">
       <div className="flex items-center gap-4 mb-12">
         <a
           href="https://alsenda.local"

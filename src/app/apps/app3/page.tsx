@@ -1,7 +1,7 @@
 export default function App3() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-900 text-white">
-      <div className="max-w-6xl mx-auto px-6 py-20">
+  <div className="max-w-[1200px] mx-auto px-6 py-20">
         <div className="flex items-center gap-4 mb-12">
           <a
             href="https://alsenda.local"

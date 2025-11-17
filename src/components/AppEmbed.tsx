@@ -22,7 +22,7 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
 
   return (
     <>
-      <section id="portfolio" className="w-full px-4 sm:px-6 py-12 sm:py-16">
+  <section id="portfolio" className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <h3 className="text-xl sm:text-2xl font-bold mb-8 sm:mb-12 text-center text-white tracking-wider" style={{textShadow: "0 0 10px rgba(255, 255, 255, 0.8)"}}>
           [ APPLICATIONS ]
         </h3>
@@ -56,7 +56,7 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
       </section>
 
       {openApp === 'app1' && (
-        <section className={`w-full px-4 sm:px-6 py-8 sm:py-12 crt-flicker-continuous ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
+  <section className={`w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-12 crt-flicker-continuous ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
           <div className="mb-4">
             <button className="text-xs sm:text-sm text-cyan-400 underline cursor-pointer" onClick={handleCloseApp}>Close app</button>
           </div>
@@ -65,7 +65,7 @@ export default function AppEmbed({ applications }: { applications: AppDef[] }) {
       )}
 
       {openApp === 'app2' && (
-        <section className={`w-full px-4 sm:px-6 py-8 sm:py-12 crt-flicker-continuous ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
+  <section className={`w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-12 crt-flicker-continuous ${isClosing ? 'crt-turn-off' : 'crt-turn-on-glitch'}`}>
           <div className="mb-4">
             <button className="text-xs sm:text-sm text-cyan-400 underline cursor-pointer" onClick={handleCloseApp}>Close app</button>
           </div>

@@ -2,7 +2,7 @@ import AppWizard from '../../../components/AppWizard';
 
 export default function App1() {
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12">
+  <div className="max-w-[1200px] mx-auto px-6 py-12">
       <div className="flex items-center gap-4 mb-8">
         <a href="/" className="text-cyan-400 hover:text-cyan-300 transition">← Back to Portfolio</a>
       </div>
