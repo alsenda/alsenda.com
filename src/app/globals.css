@@ -571,3 +571,96 @@ html[data-theme="tron"] a {
 html[data-theme="tron"] a:hover {
   color: #ff8c3c;
 }
+
+/* ========================================
+   LIGHT TERMINAL THEME (High contrast light background)
+   ======================================== */
+html[data-theme="light"] {
+  --background: #f5f7fa; /* light shell background */
+  --surface: #ffffff; /* card surface */
+  --foreground: #1e2430; /* primary text (dark slate) */
+  --muted: #5d6b7a; /* secondary text */
+  --ega-cyan: 16,108,138; /* teal accent */
+  --ega-magenta: 184,52,118; /* raspberry accent */
+  --ega-white: 0,0,0; /* treat 'white' utility classes as dark text for readability */
+}
+
+html[data-theme="light"] body {
+  background: linear-gradient(180deg, #f5f7fa 0%, #e9eef3 60%, #dde3ea 100%);
+  color: var(--foreground);
+}
+
+html[data-theme="light"] body::before {
+  background: linear-gradient(120deg,
+    rgba(16,108,138,0.10),
+    rgba(184,52,118,0.08),
+    rgba(0,0,0,0.05)
+  );
+  opacity: 0.8;
+  mix-blend-mode: normal;
+}
+
+html[data-theme="light"] .overlay-scanlines {
+  background-image: linear-gradient(rgba(0,0,0,0.06) 50%, rgba(255,255,255,0.5) 50%);
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+}
+
+html[data-theme="light"] body::after {
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.08) 75%);
+}
+
+/* Headings soft glow adjusted for light background */
+html[data-theme="light"] h1,
+html[data-theme="light"] h2,
+html[data-theme="light"] h3,
+html[data-theme="light"] h4,
+html[data-theme="light"] h5,
+html[data-theme="light"] h6 {
+  text-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 0 8px rgba(184,52,118,0.15);
+  color: var(--foreground);
+}
+
+html[data-theme="light"] a { color: rgb(var(--ega-cyan)); }
+html[data-theme="light"] a:hover { color: rgb(var(--ega-magenta)); }
+
+/* Cards and borders lighten with subtle shadow */
+html[data-theme="light"] .tilt-card {
+  background: var(--surface) !important;
+  border-color: rgba(16,108,138,0.35) !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+html[data-theme="light"] .tilt-card:hover {
+  border-color: rgba(184,52,118,0.55) !important;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12), 0 0 12px rgba(16,108,138,0.15);
+}
+
+/* Theme & motion toggle for light mode */
+html[data-theme="light"] .theme-toggle,
+html[data-theme="light"] .motion-toggle {
+  background: rgba(255,255,255,0.7);
+  border-color: rgba(0,0,0,0.08);
+  color: #1e2430;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+html[data-theme="light"] .theme-toggle:hover {
+  background: rgba(184,52,118,0.15);
+  border-color: rgba(184,52,118,0.6);
+  color: #b83476;
+  box-shadow: 0 4px 14px rgba(184,52,118,0.25);
+}
+
+/* Neon links adapt */
+html[data-theme="light"] .neon-link:hover {
+  text-shadow: 0 0 6px rgba(16,108,138,0.4), 0 0 14px rgba(184,52,118,0.25);
+  color: #000;
+}
+
+/* Particle tint subtle for light */
+html[data-theme="light"] .particle-canvas {
+  opacity: 0.25;
+  filter: saturate(0.8);
+}
+
+/* Reduce scanline animation intensity light mode */
+html[data-theme="light"] .overlay-scanlines { animation: none; }

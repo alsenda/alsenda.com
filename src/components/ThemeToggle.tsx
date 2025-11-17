@@ -6,6 +6,7 @@ const themes = [
   { name: 'EGA', value: 'ega' },
   { name: 'CRT', value: 'crt-green' },
   { name: 'TRON', value: 'tron' },
+  { name: 'LIGHT', value: 'light' },
   // Add more themes here in the future
 ] as const;
 
