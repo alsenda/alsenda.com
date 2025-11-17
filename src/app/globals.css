@@ -236,17 +236,17 @@ html[data-three-d="true"] h6:hover {
 /* CRT Monitor Turn-On Animation */
 @keyframes crtTurnOn {
   0% {
-    opacity: 0;
-    transform: scale(0.9) translateY(20px);
-    filter: brightness(0);
+    opacity: 1;
+    transform: scale(0.95);
+    filter: brightness(0.95);
   }
   10% {
-    filter: brightness(0.3);
+    filter: brightness(0.8);
   }
   30% {
-    opacity: 0.8;
-    filter: brightness(0.8);
-    transform: scale(1.02) translateY(0);
+    opacity: 1;
+    filter: brightness(0.9);
+    transform: scale(1.02);
   }
   50% {
     opacity: 1;
@@ -258,7 +258,7 @@ html[data-three-d="true"] h6:hover {
   100% {
     opacity: 1;
     filter: brightness(1);
-    transform: scale(1) translateY(0);
+    transform: scale(1);
   }
 }
 
