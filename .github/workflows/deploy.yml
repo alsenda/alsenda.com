@@ -3,7 +3,7 @@ name: Deploy to Vercel (Production)
 on:
   push:
     branches:
-      - master
+      - main
   workflow_dispatch:
 
 # Ensure only one deploy runs at a time for production
