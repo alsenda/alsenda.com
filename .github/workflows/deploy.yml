@@ -1,0 +1,53 @@
+name: Deploy to Vercel (Production)
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+# Ensure only one deploy runs at a time for production
+concurrency:
+  group: vercel-deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      # Optional: customize Node version
+      NODE_VERSION: 20
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build (Next.js)
+        run: npm run build
+
+      # Prebuild creates .vercel/output for deployment
+      - name: Vercel prebuild
+        run: npx vercel build --prod --token ${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel (use prebuilt output)
+        run: npx vercel deploy --prebuilt --prod --token ${{ secrets.VERCEL_TOKEN }} --yes
+
+      - name: Post-deploy URL output
+        run: |
+          echo "Deployment triggered for commit $GITHUB_SHA"
+
+# SECRETS REQUIRED (set in GitHub repository settings > Secrets > Actions):
+#   VERCEL_TOKEN      -> Create via Vercel Dashboard (Account Settings > Tokens)
+# Optionally if build fails to link project automatically, add:
+#   VERCEL_PROJECT_ID -> From Vercel dashboard project settings JSON (Project ID)
+#   VERCEL_ORG_ID     -> From Vercel dashboard (Team/Account ID)
+# If needed you can pass: npx vercel deploy --prebuilt --prod --token ${{ secrets.VERCEL_TOKEN }} --project ${{ secrets.VERCEL_PROJECT_ID }} --scope ${{ secrets.VERCEL_ORG_ID }}
+# But usually placing a .vercel/project.json (not committed if secret) or linking once locally is enough.
