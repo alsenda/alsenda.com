@@ -11,8 +11,16 @@ export type ChatMessage = {
 
 const DEFAULT_PATH = path.join(process.cwd(), 'data', 'chat.json');
 
+// In production on Vercel the repository filesystem is read-only; only /tmp is writable and ephemeral.
+// We detect Vercel via process.env.VERCEL and fallback to /tmp for file-based storage when Redis is absent.
+// For completely read-only failures we keep an in-memory array so the request still succeeds (non-persistent).
+let writeFailed = false; // if true, use inMemory store instead of file
+let inMemory: ChatMessage[] = [];
+
 function filePath(): string {
-  return process.env.CHAT_FILE_PATH || DEFAULT_PATH;
+  if (process.env.CHAT_FILE_PATH) return process.env.CHAT_FILE_PATH;
+  if (process.env.VERCEL) return path.join('/tmp', 'chat.json');
+  return DEFAULT_PATH;
 }
 
 // Redis client (optional). Use REDIS_URL to enable Redis mode.
@@ -71,6 +79,10 @@ export async function addMessageAsync(username: string, text: string): Promise<C
 
 // keep synchronous legacy functions for tests/fallback
 export function readMessages(): ChatMessage[] {
+  if (writeFailed) {
+    // Non-persistent ephemeral memory fallback
+    return inMemory.slice();
+  }
   const p = filePath();
   try {
     if (!fs.existsSync(p)) return [];
@@ -86,8 +98,14 @@ export function readMessages(): ChatMessage[] {
 export function writeMessages(msgs: ChatMessage[]) {
   const p = filePath();
   const dir = path.dirname(p);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(p, JSON.stringify(msgs, null, 2), 'utf8');
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(p, JSON.stringify(msgs, null, 2), 'utf8');
+  } catch (e) {
+    // Mark write failure and switch to in-memory ephemeral storage
+    writeFailed = true;
+    inMemory = msgs.slice();
+  }
 }
 
 export function pruneMessages(msgs: ChatMessage[], keepMs = 24 * 60 * 60 * 1000): ChatMessage[] {
@@ -102,10 +120,14 @@ export function addMessage(username: string, text: string): ChatMessage {
   const pruned = pruneMessages(msgs);
   pruned.push(msg);
   writeMessages(pruned);
+  // If write failed, ensure inMemory has latest state
+  if (writeFailed) inMemory = pruned;
   return msg;
 }
 
 export function clearMessages() {
   const p = filePath();
   try { fs.unlinkSync(p); } catch (e) {}
+  inMemory = [];
+  writeFailed = false;
 }
