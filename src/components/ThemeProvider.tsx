@@ -28,9 +28,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     const root = document.documentElement;
 
-    // Ensure we are on the EGA base theme so CSS overrides are consistent
-    // without mutating user's saved theme toggle key.
-    try { root.setAttribute('data-theme', 'ega'); } catch {}
+    // Don't override the preset theme attribute - let ThemeToggle manage it
+    // Only set to 'ega' if we're applying a custom AI theme
+    // This allows preset themes (tron, crt-green, light) to work alongside custom themes
 
     // Apply color variables
     root.style.setProperty("--background", theme.colors.background);
@@ -112,7 +112,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     applyThemeToDom(DEFAULT_THEME);
     setIsCustomTheme(false);
     setGenerationStage("idle");
-    try { document.documentElement.setAttribute('data-theme', 'ega'); } catch {}
     
     // Clear from localStorage
     try {
