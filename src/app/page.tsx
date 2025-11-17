@@ -1,4 +1,5 @@
-﻿import AppEmbed from '../components/AppEmbed';
+﻿import ThemeToggle from '@/components/ThemeToggle';
+import AppEmbed from '../components/AppEmbed';
 
 export default function Home() {
   const applications = [
@@ -45,10 +46,8 @@ export default function Home() {
                 [ABOUT]
               </a>
             </li>
-            <li>
-              <a href="#contact" className="text-white hover:text-pink-400 transition font-bold">
-                [CONTACT]
-              </a>
+            <li className="ml-8">
+              <ThemeToggle />
             </li>
           </ul>
         </div>
