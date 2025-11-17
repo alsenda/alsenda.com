@@ -85,7 +85,9 @@ export default function Home() {
       <footer id="contact" className="border-t-4 border-magenta-500 bg-black py-8 mt-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center text-cyan-400 font-mono text-sm mb-4">
-            
+            <a href="https://cv.alsenda.com" rel="noindex,nofollow" className="hover:text-pink-400 transition" target='_blank'>
+              [VIEW CV]
+            </a>
           </div>
        <div className="text-center text-white font-bold mb-4">
          2025 ALSENDA PORTFOLIO | BUILT WITH NEXT.JS
