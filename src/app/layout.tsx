@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CRTPageTransition from "@/components/CRTPageTransition";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -234,12 +235,14 @@ export default function RootLayout({
 })();`
           }}
         />
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
-          <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
-          <CRTPageTransition>
-            {children}
-          </CRTPageTransition>
-        </div>
+        <ThemeProvider>
+          <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+            <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
+            <CRTPageTransition>
+              {children}
+            </CRTPageTransition>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

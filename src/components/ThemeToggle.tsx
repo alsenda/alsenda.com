@@ -1,25 +1,38 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { THEME_STORAGE_KEY } from '@/lib/theme';
 
-const themes = [
+type ThemeOption = {
+  name: string;
+  value: string;
+};
+
+const presetThemes: ThemeOption[] = [
   { name: 'EGA', value: 'ega' },
   { name: 'CRT', value: 'crt-green' },
   { name: 'TRON', value: 'tron' },
   { name: 'LIGHT', value: 'light' },
-  // Add more themes here in the future
-] as const;
+];
 
 export default function ThemeToggle() {
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [hasCustomTheme, setHasCustomTheme] = useState(false);
+  const [themes, setThemes] = useState<ThemeOption[]>(presetThemes);
 
   useEffect(() => {
     setMounted(true);
-    // Load saved theme from localStorage
+    const customTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const hasCustom = !!customTheme;
+    setHasCustomTheme(hasCustom);
+    const themeList: ThemeOption[] = hasCustom 
+      ? [...presetThemes, { name: 'CUSTOM', value: 'custom' }]
+      : [...presetThemes];
+    setThemes(themeList);
     const saved = localStorage.getItem('alsenda-theme');
     if (saved) {
-      const index = themes.findIndex(t => t.value === saved);
+      const index = themeList.findIndex(t => t.value === saved);
       if (index !== -1) {
         setCurrentThemeIndex(index);
         document.documentElement.setAttribute('data-theme', saved);
@@ -27,30 +40,48 @@ export default function ThemeToggle() {
     }
   }, []);
 
+  useEffect(() => {
+    const checkCustomTheme = () => {
+      const customTheme = localStorage.getItem(THEME_STORAGE_KEY);
+      const hasCustom = !!customTheme;
+      if (hasCustom !== hasCustomTheme) {
+        setHasCustomTheme(hasCustom);
+        const themeList: ThemeOption[] = hasCustom 
+          ? [...presetThemes, { name: 'CUSTOM', value: 'custom' }]
+          : [...presetThemes];
+        setThemes(themeList);
+      }
+    };
+    const interval = setInterval(checkCustomTheme, 1000);
+    window.addEventListener('storage', checkCustomTheme);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('storage', checkCustomTheme);
+    };
+  }, [hasCustomTheme]);
+
   const cycleTheme = () => {
     const nextIndex = (currentThemeIndex + 1) % themes.length;
     const nextTheme = themes[nextIndex];
-    
     setCurrentThemeIndex(nextIndex);
-    document.documentElement.setAttribute('data-theme', nextTheme.value);
+    if (nextTheme.value !== 'custom') {
+      document.documentElement.setAttribute('data-theme', nextTheme.value);
+    }
     try {
       localStorage.setItem('alsenda-theme', nextTheme.value);
     } catch(e) {}
     try {
-      // Persist to cookie for potential SSR usage or future edge logic
       document.cookie = `alsenda-theme=${nextTheme.value}; path=/; max-age=31536000; SameSite=Lax`;
     } catch(e) {}
+    if (nextTheme.value === 'custom') {
+      window.location.reload();
+    }
   };
 
-  // Don't render until mounted to avoid hydration mismatch
   if (!mounted) {
     return (
-      <button 
-        className="theme-toggle" 
-        aria-label="Switch theme"
-        disabled
-      >
-        {themes[0].name}
+      <button className="theme-toggle" aria-label="Switch theme" disabled>
+        {presetThemes[0].name}
       </button>
     );
   }

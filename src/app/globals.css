@@ -11,6 +11,25 @@
   --ega-white: 255,255,255;
 }
 
+/* AI Theme Shaper - Smooth transitions for theme changes (scoped to avoid conflicts) */
+body,
+.bg-black,
+.bg-gray-900,
+.text-white,
+.text-cyan-300,
+.text-cyan-400,
+.text-pink-400,
+.text-magenta-400,
+.border-cyan-400,
+.border-magenta-500,
+.text-slate-300,
+.text-slate-400,
+.text-zinc-400 {
+  transition: background-color 0.6s ease, 
+              color 0.6s ease,
+              border-color 0.6s ease !important;
+}
+
 /* Explicit EGA theme hook for consistency with other themed variants */
 html[data-theme='ega'] {
   /* Variables already defined on :root; this ensures cascading specificity parity */
@@ -82,7 +101,8 @@ body::before {
   position: fixed;
   inset: 0;
   z-index: -3;
-  background: linear-gradient(120deg, rgba(var(--ega-cyan),0.07), rgba(var(--ega-magenta),0.06), rgba(var(--ega-white),0.02));
+  /* Allow AI Theme to override background gradient */
+  background: var(--theme-gradient, linear-gradient(120deg, rgba(var(--ega-cyan),0.07), rgba(var(--ega-magenta),0.06), rgba(var(--ega-white),0.02)));
   background-size: 400% 400%;
   opacity: 1;
   mix-blend-mode: screen;
@@ -101,7 +121,7 @@ body::before {
   background-image: linear-gradient(rgba(0,0,0,0.22) 50%, rgba(255,255,255,0.04) 50%);
   background-size: 100% 4px;
   mix-blend-mode: overlay;
-  opacity: 0.95;
+  opacity: var(--theme-scanline-opacity, 0.95);
   /* subtle vertical jitter to simulate a screen wobble */
   animation: scanlineFlicker 3s steps(3) infinite;
 }
@@ -166,7 +186,7 @@ body::after {
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  opacity: 0.45;
+  opacity: var(--theme-particle-opacity, 0.45);
 }
 
 /* Card tilt variables and effect (set by JS per-card) */

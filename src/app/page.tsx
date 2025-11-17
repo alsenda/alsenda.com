@@ -1,5 +1,6 @@
 ﻿import ThemeToggle from '@/components/ThemeToggle';
 import AppEmbed from '../components/AppEmbed';
+import ThemeControlPanel from '@/components/ThemeControlPanel';
 
 export default function Home() {
   const applications = [
@@ -46,9 +47,9 @@ export default function Home() {
                 [ABOUT]
               </a>
             </li>
-            <li>
+            {/* <li>
               <ThemeToggle />
-            </li>
+            </li> */}
           </ul>
         </div>
       </nav>
@@ -80,6 +81,11 @@ export default function Home() {
             </ul>
           </div>
         </div>
+      </section>
+
+      {/* AI Theme Shaper Section */}
+      <section className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
+        <ThemeControlPanel />
       </section>
 
       {/* Footer */}
