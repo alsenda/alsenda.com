@@ -90,30 +90,30 @@ export default function AppWizard(): React.ReactElement {
   }
 
   return (
-    <div className="bg-black text-white font-mono">
-      <div className="max-w-6xl mx-auto px-6 py-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
+    <div className="bg-black text-white font-mono w-full">
+      <div className="w-full px-4 sm:px-6 py-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-0">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
             <span style={{color: 'rgb(var(--ega-cyan))'}}>Create</span><span style={{color: 'rgb(var(--ega-magenta))'}}> App</span><span style={{color: 'rgb(var(--ega-white))'}}> Wizard</span>
           </h2>
           <div>
-            <button className="px-4 h-12 inline-flex items-center bg-white text-cyan-400 font-bold" onClick={handleCreateAndDownload} disabled={zipping}>
+            <button className="px-3 sm:px-4 h-10 sm:h-12 inline-flex items-center font-bold cursor-pointer text-sm sm:text-base" onClick={handleCreateAndDownload} disabled={zipping}>
               {zipping ? 'Creating...' : 'Create & Download'}
             </button>
           </div>
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-black/60 p-4 border border-cyan-400">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="bg-black/60 p-3 sm:p-4 border border-cyan-400">
             <div className="space-y-3">
               <label className="block text-xs text-slate-300">Frontend framework</label>
-              <select value={cfg.frontend} onChange={e => setCfg({ ...cfg, frontend: e.target.value as AppConfig['frontend'] })} className="w-full p-2 bg-black border border-cyan-600">
+              <select value={cfg.frontend} onChange={e => setCfg({ ...cfg, frontend: e.target.value as AppConfig['frontend'] })} className="w-full p-2 bg-black border text-sm">
                 <option value="next">Next.js</option>
                 <option value="sveltekit">SvelteKit</option>
                 <option value="react-native">React Native</option>
               </select>
 
               <label className="block text-xs text-slate-300">Data layer</label>
-              <select value={cfg.dataLayer} onChange={e => setCfg({ ...cfg, dataLayer: e.target.value as AppConfig['dataLayer'] })} className="w-full p-2 bg-black border border-cyan-600">
+              <select value={cfg.dataLayer} onChange={e => setCfg({ ...cfg, dataLayer: e.target.value as AppConfig['dataLayer'] })} className="w-full p-2 bg-black border text-sm">
                 <option value="rest">REST</option>
                 <option value="graphql">GraphQL</option>
                 <option value="trpc">tRPC</option>
@@ -121,7 +121,7 @@ export default function AppWizard(): React.ReactElement {
               </select>
 
               <label className="block text-xs text-slate-300">Database</label>
-              <select value={cfg.database} onChange={e => setCfg({ ...cfg, database: e.target.value as AppConfig['database'] })} className="w-full p-2 bg-black border border-cyan-600">
+              <select value={cfg.database} onChange={e => setCfg({ ...cfg, database: e.target.value as AppConfig['database'] })} className="w-full p-2 bg-black border text-sm">
                 <option value="postgres">Postgres</option>
                 <option value="redis">Redis</option>
                 <option value="firebase">Firebase</option>
@@ -129,7 +129,7 @@ export default function AppWizard(): React.ReactElement {
               </select>
 
               <label className="block text-xs text-slate-300">Auth</label>
-              <select value={cfg.auth} onChange={e => setCfg({ ...cfg, auth: e.target.value as AppConfig['auth'] })} className="w-full p-2 bg-black border border-cyan-600">
+              <select value={cfg.auth} onChange={e => setCfg({ ...cfg, auth: e.target.value as AppConfig['auth'] })} className="w-full p-2 bg-black border text-sm">
                 <option value="clerk">Clerk</option>
                 <option value="auth0">Auth0</option>
                 <option value="nextauth">NextAuth</option>
@@ -137,7 +137,7 @@ export default function AppWizard(): React.ReactElement {
               </select>
 
               <label className="block text-xs text-slate-300">Deployment target</label>
-              <select value={cfg.deploy} onChange={e => setCfg({ ...cfg, deploy: e.target.value as AppConfig['deploy'] })} className="w-full p-2 bg-black border border-cyan-600">
+              <select value={cfg.deploy} onChange={e => setCfg({ ...cfg, deploy: e.target.value as AppConfig['deploy'] })} className="w-full p-2 bg-black border text-sm">
                 <option value="vercel">Vercel</option>
                 <option value="fly">Fly.io</option>
                 <option value="docker-vps">Docker VPS</option>
@@ -145,21 +145,21 @@ export default function AppWizard(): React.ReactElement {
             </div>
           </div>
 
-          <div className="bg-black/60 p-4 border border-magenta-500">
-            <h3 className="text-sm text-slate-300 mb-2">Architecture summary</h3>
-            <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40">{result.summary}</pre>
-            <h3 className="text-sm text-slate-300 mt-3 mb-2">Folder tree</h3>
-            <div className="text-xs font-mono bg-black/40 p-2">
+          <div className="bg-black/60 p-3 sm:p-4 border border-magenta-500">
+            <h3 className="text-xs sm:text-sm text-slate-300 mb-2">Architecture summary</h3>
+            <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40 overflow-x-auto">{result.summary}</pre>
+            <h3 className="text-xs sm:text-sm text-slate-300 mt-3 mb-2">Folder tree</h3>
+            <div className="text-xs font-mono bg-black/40 p-2 max-h-48 overflow-y-auto">
               {result.folderTree.map((f, i) => <div key={i}>{f}</div>)}
             </div>
-            <div className="mt-3 flex items-center gap-2">
-              <button className="px-3 py-1 bg-cyan-700 text-sm" onClick={handleCreateAndDownload} disabled={zipping}>
+            <div className="mt-3 flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <button className="px-3 py-1 text-xs sm:text-sm cursor-pointer w-full sm:w-auto" onClick={handleCreateAndDownload} disabled={zipping}>
                 {zipping ? 'Creating ZIP...' : 'Create & Download'}
               </button>
-              {zipError && <span className="text-xs text-red-400">Error: {zipError}</span>}
+              {zipError && <span className="text-xs text-red-400 break-all">Error: {zipError}</span>}
             </div>
             <div className="mt-2">
-              {progress != null && <div className="text-xs text-cyan-300 font-mono">Progress: {progress}% {progressMsg ? ` — ${progressMsg}` : ''}</div>}
+              {progress != null && <div className="text-xs text-cyan-300 font-mono break-all">Progress: {progress}% {progressMsg ? ` — ${progressMsg}` : ''}</div>}
             </div>
           </div>
         </div>

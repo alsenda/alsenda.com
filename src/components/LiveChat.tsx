@@ -127,7 +127,7 @@ export default function LiveChat(): React.ReactElement {
 
   return (
     <div className="bg-black text-white font-mono">
-      <div className="max-w-6xl mx-auto px-6 pt-6">
+      <div className="max-w-none mx-auto px-6 pt-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
             <span style={{color: 'rgb(var(--ega-cyan))'}}>Live</span><span style={{color: 'rgb(var(--ega-magenta))'}}> Chat</span><span style={{color: 'rgb(var(--ega-white))'}}> (24h)</span>
@@ -171,7 +171,7 @@ export default function LiveChat(): React.ReactElement {
           onChange={e => setText(e.target.value)}
           placeholder="Type a message..."
         />
-        <button type="submit" disabled={loading} className="px-3 py-2 bg-pink-400 text-black font-bold">
+        <button type="submit" disabled={loading} className="px-3 py-2 font-bold">
           Send
         </button>
       </form>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CRTPageTransition from "@/components/CRTPageTransition";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,8 +28,16 @@ export default function RootLayout({
   const enableThreeD = process.env.NEXT_PUBLIC_ENABLE_3D === 'true';
   return (
     <html lang="en" data-three-d={enableThreeD}>
+      <head>
+        {/* Early theme application to avoid flash of default before hydration */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `!function(){try{var k='alsenda-theme';var v=localStorage.getItem(k);if(!v){var m=document.cookie.match(/(?:^|; )alsenda-theme=([^;]+)/);v=m&&m[1];}if(!v){v='ega';}document.documentElement.setAttribute('data-theme', v);}catch(e){}}();`
+          }}
+        />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full`}
       >
         <script
           dangerouslySetInnerHTML={{
@@ -226,6 +235,7 @@ export default function RootLayout({
 })();`
           }}
         />
+        <ThemeToggle />
         <button id="motion-toggle" className="motion-toggle" aria-pressed="false" title="Reduce motion">Reduce motion</button>
         <CRTPageTransition>
           {children}

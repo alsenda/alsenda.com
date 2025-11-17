@@ -7,7 +7,7 @@ export default function CRTPageTransition({
   children: React.ReactNode;
 }): React.ReactElement {
   return (
-    <div className="crt-turn-on crt-flicker-continuous">
+    <div className="crt-turn-on crt-flicker-continuous w-full">
       {children}
     </div>
   );
