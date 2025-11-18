@@ -332,11 +332,11 @@ async function generateWithOpenAI(description: string): Promise<ThemeTokens | nu
 
   const system = `You are a UI theme generator. Output ONLY a JSON object that matches this TypeScript type, no prose:\n\n{
   "colors": {
-    "background": string,            // hex color like "#0a0e1a" (dark) or "#f5f7fa" (light)
+    "background": string,
     "surface": string,               // hex color (slightly lighter/darker than background)
     "foreground": string,            // hex color (text color - dark on light bg, light on dark bg)
     "muted": string,                 // hex color (secondary text)
-    "egaCyan": string,               // rgb tuple string like "34,211,238" - use for primary accent
+    "egaCyan": string,               // rgb tuple string - use for primary accent
     "egaMagenta": string,            // rgb tuple string - use for secondary accent
     "egaWhite": string               // rgb tuple string - use for highlights
   },
@@ -357,7 +357,7 @@ async function generateWithOpenAI(description: string): Promise<ThemeTokens | nu
     "particleOpacity"?: string,      // 0..1 as string
     "scanlineOpacity"?: string       // 0..1 as string
   }
-}\n\nCritical Rules:\n1. ALWAYS respect the user's request for light vs dark themes explicitly\n2. If user mentions "light" or "bright": use light backgrounds (#e-f range), dark foregrounds (#0-3 range)\n3. If user mentions specific colors (blue, purple, orange, etc.): use those colors in egaCyan and egaMagenta\n4. Keep contrasts accessible (WCAG AA minimum)\n5. Use hex for solid colors and rgb tuple strings for ega* fields\n6. Default to retro/CRT aesthetic ONLY if user doesn't specify otherwise\n7. Keep output strictly valid JSON`;
+}\n\nCritical Rules:\n1. ALWAYS respect the user's request for light vs dark themes if given\n2. If user mentions "light" or "bright": use light backgrounds (#e-f range), dark foregrounds (#0-3 range)\n3. Keep contrasts accessible (WCAG AA minimum)\n5. Use hex for solid colors and rgb tuple strings for ega* fields\n6. Default to retro/CRT aesthetic ONLY if user doesn't specify otherwise\n7. Keep output strictly valid JSON`;
 
   const user = `Generate a theme based on this description. Pay close attention to any color names and light/dark preferences:\n\n${description}`;
 
