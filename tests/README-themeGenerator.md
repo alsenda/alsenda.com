@@ -64,8 +64,8 @@ npm test -- --watch
 - Includes backgroundArt settings
 
 ### AI vs Heuristic
-- Works when OPENAI_API_KEY is not set (heuristic fallback)
-- Uses AI when OPENAI_API_KEY is present
+- Works when GOOGLEAI_API_KEY is not set (heuristic fallback)
+- Uses AI when GOOGLEAI_API_KEY is present
 
 ### Edge Cases
 - Handles very long descriptions
@@ -75,8 +75,7 @@ npm test -- --watch
 ## Test Environment Variables
 
 - `API_BASE_URL`: Base URL for API calls (default: http://localhost:3000)
-- `OPENAI_API_KEY`: OpenAI API key for AI-backed generation (optional)
-- `OPENAI_MODEL`: OpenAI model to use (default: gpt-4o-mini)
+- `GOOGLEAI_API_KEY`: Google AI API key for AI-backed generation (optional)
 
 ## Manual Testing
 
@@ -123,7 +122,7 @@ When you mention specific colors:
 3. Clear build cache: `rm -rf .next`
 
 ### AI Generation Not Working
-1. Verify OPENAI_API_KEY is set in `.env`
+1. Verify GOOGLEAI_API_KEY is set in `.env`
 2. Check API key has sufficient credits
 3. Check console for error messages
 4. Tests should still pass with heuristic fallback

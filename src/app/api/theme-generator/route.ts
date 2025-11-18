@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { ThemeTokens } from "@/lib/theme";
+import { GoogleGenAI } from "@google/genai";
 
 /**
  * AI Theme Generator API Endpoint
@@ -19,34 +20,50 @@ const COLOR_KEYWORDS: Record<string, string> = {
   navy: "#1e3a8a",
   teal: "#14b8a6",
   cyan: "#22d3ee",
+  sky: "#0ea5e9",
+  azure: "#3b82f6",
   
   // Purples
   purple: "#a855f7",
   violet: "#8b5cf6",
   magenta: "#ec4899",
   pink: "#f472b6",
+  lavender: "#c084fc",
   
   // Reds
   red: "#ef4444",
   crimson: "#dc2626",
   rose: "#f43f5e",
+  coral: "#fb7185",
   
   // Greens
   green: "#22c55e",
   lime: "#84cc16",
   emerald: "#10b981",
+  mint: "#6ee7b7",
+  sage: "#86efac",
   
   // Yellows/Oranges
   yellow: "#eab308",
   gold: "#f59e0b",
   orange: "#f97316",
   amber: "#f59e0b",
+  peach: "#fdba74",
+  
+  // Earth tones
+  brown: "#92400e",
+  tan: "#d97706",
+  beige: "#fef3c7",
+  cream: "#fef3c7",
+  sand: "#fcd34d",
+  terracotta: "#ea580c",
   
   // Neutrals
   white: "#ffffff",
   black: "#000000",
   gray: "#6b7280",
   silver: "#d1d5db",
+  slate: "#475569",
 };
 
 const MOOD_PRESETS: Record<string, Partial<ThemeTokens>> = {
@@ -108,6 +125,55 @@ const MOOD_PRESETS: Record<string, Partial<ThemeTokens>> = {
     effects: {
       glowIntensity: "0.7",
       textShadow: "0 0 10px rgba(111,195,223,0.6), 0 0 20px rgba(70,130,180,0.3)",
+    },
+  },
+  mediterranean: {
+    colors: {
+      background: "#f8f9fa",
+      surface: "#ffffff",
+      foreground: "#1a365d",
+      muted: "#64748b",
+      egaCyan: "59,130,246", // blue
+      egaMagenta: "234,179,8", // gold/yellow
+      egaWhite: "26,54,93", // dark blue
+    },
+    effects: {
+      glowIntensity: "0.3",
+      textShadow: "0 0 8px rgba(59,130,246,0.3), 0 0 16px rgba(234,179,8,0.2)",
+      borderRadius: "0.75rem",
+    },
+    typography: {
+      fontFamily: "'Georgia', 'Garamond', serif",
+    },
+  },
+  coastal: {
+    colors: {
+      background: "#f0f9ff",
+      surface: "#ffffff",
+      foreground: "#0c4a6e",
+      muted: "#64748b",
+      egaCyan: "14,165,233", // sky blue
+      egaMagenta: "251,191,36", // amber/sand
+      egaWhite: "12,74,110", // deep blue
+    },
+    effects: {
+      glowIntensity: "0.4",
+      textShadow: "0 0 6px rgba(14,165,233,0.4), 0 0 12px rgba(251,191,36,0.2)",
+    },
+  },
+  summer: {
+    colors: {
+      background: "#fffbeb",
+      surface: "#ffffff",
+      foreground: "#92400e",
+      muted: "#78716c",
+      egaCyan: "249,115,22", // orange
+      egaMagenta: "234,179,8", // yellow
+      egaWhite: "146,64,14", // brown
+    },
+    effects: {
+      glowIntensity: "0.5",
+      textShadow: "0 0 8px rgba(249,115,22,0.5), 0 0 16px rgba(234,179,8,0.3)",
     },
   },
 };
@@ -286,26 +352,98 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Try AI-backed generation first if OPENAI_API_KEY is present
     let theme: ThemeTokens | null = null;
-    if (process.env.OPENAI_API_KEY) {
+    let usedAI = false;
+    let method = "";
+    let message = "";
+    let aiError: string | null = null;
+    let aiResponse: string | null = null; // Store AI's raw response
+
+  // Priority 1: Try Google AI if API key is present and mock is not explicitly enabled
+  // In test mode we always force the heuristic path to keep tests fast and offline.
+  const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITEST_WORKER_ID;
+  const useMockAI = isTest || process.env.USE_MOCK_AI === 'true';
+    
+    if (process.env.GOOGLEAI_API_KEY && !useMockAI) {
+      console.log("Attempting Google AI generation...");
       try {
-        theme = await generateWithOpenAI(description);
+        const result = await generateWithGoogleAI(description);
+        if (result) {
+          theme = result.theme;
+          aiResponse = result.rawResponse;
+          usedAI = true;
+          method = "Google Gemini";
+          message = "Theme generated using Google AI based on your description";
+          console.log("Google AI generation succeeded");
+        } else {
+          // API call succeeded but returned invalid theme
+          aiError = "AI returned invalid theme format";
+          console.warn("Google AI returned invalid theme format");
+        }
       } catch (e) {
-        console.error("OpenAI generation failed, falling back to heuristic:", e);
+        const errorMsg = e instanceof Error ? e.message : 'Unknown error';
+        console.error("Google AI generation failed:", errorMsg);
+        aiError = `Google AI error: ${errorMsg}`;
       }
+    } else if (useMockAI) {
+      aiError = "AI generation disabled (USE_MOCK_AI=true in .env)";
+      console.log("Skipping AI generation: USE_MOCK_AI is enabled or running under test mode");
+    } else if (!process.env.GOOGLEAI_API_KEY) {
+      aiError = "No AI API key configured (GOOGLEAI_API_KEY not set)";
+      console.log("Skipping AI generation: No API key configured");
     }
 
-    // Fallback to heuristic generator
+    // Priority 2: Use enhanced heuristic generator (smart mock)
     if (!theme) {
+      console.log("Using smart fallback generator");
       theme = generateThemeFromDescription(description);
+      usedAI = false;
+      
+      // Determine which method was used
+      const lowerDesc = description.toLowerCase();
+      const mood = detectMood(lowerDesc);
+      
+      // Build status prefix
+      const statusPrefix = aiError ? `[${aiError}] ` : "";
+      
+      if (mood) {
+        method = `Preset: ${mood.charAt(0).toUpperCase() + mood.slice(1)}`;
+        message = `${statusPrefix}Detected "${mood}" mood from your description`;
+      } else {
+        const colors = extractColorsFromDescription(lowerDesc);
+        if (colors.length > 0) {
+          method = `Smart Color Analysis (${colors.length} color${colors.length > 1 ? 's' : ''})`;
+          message = `${statusPrefix}Extracted ${colors.length} color${colors.length > 1 ? 's' : ''} from your description`;
+        } else {
+          method = "Default Theme (Fallback)";
+          message = `${statusPrefix}No specific colors or moods detected in description`;
+        }
+      }
+      
+      console.log(`Fallback method: ${method}`);
+      console.log(`Message: ${message}`);
     }
 
-    return NextResponse.json(theme, { status: 200 });
+    // For backward compatibility with tests and older clients, return theme tokens at the top level
+    // and include metadata as an additional field. Clients that expect { theme, metadata } can
+    // still work by checking for the presence of top-level colors vs nested theme.
+    return NextResponse.json(
+      {
+        ...theme,
+        metadata: {
+          usedAI,
+          method,
+          message,
+          aiError: aiError || undefined, // Include AI error details if present
+          aiResponse: aiResponse || undefined, // Include AI raw response if present
+        },
+      },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Theme generation error:", error);
     return NextResponse.json(
-      { error: "Failed to generate theme" },
+      { error: "Failed to generate theme", details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
@@ -326,70 +464,107 @@ function isValidThemeTokens(obj: any): obj is ThemeTokens {
   );
 }
 
-async function generateWithOpenAI(description: string): Promise<ThemeTokens | null> {
-  const apiKey = process.env.OPENAI_API_KEY as string;
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+/**
+ * Generate theme using Google Gemini via @google/genai
+ */
+async function generateWithGoogleAI(
+  description: string
+): Promise<{ theme: ThemeTokens; rawResponse: string } | null> {
+  const apiKey = process.env.GOOGLEAI_API_KEY as string | undefined;
+  if (!apiKey) throw new Error("GOOGLEAI_API_KEY is not set");
 
-  const system = `You are a UI theme generator. Output ONLY a JSON object that matches this TypeScript type, no prose:\n\n{
+  const genAI = new GoogleGenAI({ apiKey });
+
+  const prompt = `You are a UI theme generator. Based on this description, generate a website theme with appropriate colors.
+
+Description: "${description}"
+
+egaCyan, egaMagenta, and egaWhite are the three default colors of the website; ignore the variable names and generate these colors based on the description above and using r,g,b.
+The rest of the colors are standard hex color codes.
+Output ONLY valid JSON matching this structure (no markdown, no prose):
+{
   "colors": {
-    "background": string,
-    "surface": string,               // hex color (slightly lighter/darker than background)
-    "foreground": string,            // hex color (text color - dark on light bg, light on dark bg)
-    "muted": string,                 // hex color (secondary text)
-    "egaCyan": string,               // rgb tuple string - use for primary accent
-    "egaMagenta": string,            // rgb tuple string - use for secondary accent
-    "egaWhite": string               // rgb tuple string - use for highlights
+    "background": "#hex",
+    "surface": "#hex",
+    "foreground": "#hex",
+    "muted": "#hex",
+    "egaCyan": "r,g,b",
+    "egaMagenta": "r,g,b",
+    "egaWhite": "r,g,b"
   },
-  "effects"?: {
-    "borderRadius"?: string,
-    "shadowColor"?: string,
-    "shadowBlur"?: string,
-    "glowIntensity"?: string,        // 0..1 as string
-    "textShadow"?: string
-  },
-  "typography"?: {
-    "fontFamily"?: string,
-    "headingWeight"?: string,
-    "bodyWeight"?: string
-  },
-  "backgroundArt"?: {
-    "gradientColors"?: string[],     // CSS color strings like rgba(...)
-    "particleOpacity"?: string,      // 0..1 as string
-    "scanlineOpacity"?: string       // 0..1 as string
+  "effects": {
+    "glowIntensity": "0.5"
   }
-}\n\nCritical Rules:\n1. ALWAYS respect the user's request for light vs dark themes if given\n2. If user mentions "light" or "bright": use light backgrounds (#e-f range), dark foregrounds (#0-3 range)\n3. Keep contrasts accessible (WCAG AA minimum)\n5. Use hex for solid colors and rgb tuple strings for ega* fields\n6. Default to retro/CRT aesthetic ONLY if user doesn't specify otherwise\n7. Keep output strictly valid JSON`;
+}
 
-  const user = `Generate a theme based on this description. Pay close attention to any color names and light/dark preferences:\n\n${description}`;
+Rules:
+- background must contrast well with the ega colors.
+- Use complementary colors for accents.
+- Ensure good contrast (WCAG AA).
+- NEVER output markdown or text outside JSON.`;
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user },
-      ],
-      temperature: 0.7,
-      response_format: { type: 'json_object' },
-    }),
+
+  const result = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
   });
+  
+  const text = result.text;
+  if (!text) return null;
 
-  if (!res.ok) {
-    throw new Error(`OpenAI API error: ${res.status} ${res.statusText}`);
-  }
-  const json = await res.json();
-  const content = json.choices?.[0]?.message?.content;
-  if (!content) return null;
-  let parsed: any = null;
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) return null;
+
+  const raw = jsonMatch[0];
   try {
-    parsed = JSON.parse(content);
-  } catch (e) {
+    const parsed = JSON.parse(raw);
+    if (parsed.colors && !isValidThemeTokens(parsed)) {
+      const theme: ThemeTokens = {
+        colors: {
+          background: parsed.colors.background || "#1a1a2e",
+          surface: parsed.colors.surface || "#16213e",
+          foreground: parsed.colors.foreground || "#e6e6e6",
+          muted: parsed.colors.muted || "#9aa0a6",
+          egaCyan: parsed.colors.egaCyan || "34,211,238",
+          egaMagenta: parsed.colors.egaMagenta || "244,114,182",
+          egaWhite: parsed.colors.egaWhite || "255,255,255",
+        },
+        effects: {
+          borderRadius: parsed.effects?.borderRadius || "0.5rem",
+          shadowColor: parsed.effects?.shadowColor || "rgba(0,0,0,0.6)",
+          shadowBlur: parsed.effects?.shadowBlur || "20px",
+          glowIntensity: parsed.effects?.glowIntensity || "0.8",
+          textShadow:
+            parsed.effects?.textShadow ||
+            "0 0 10px rgba(34,211,238,0.8), 0 0 24px rgba(244,114,182,0.35)",
+        },
+        typography: {
+          fontFamily:
+            parsed.typography?.fontFamily ||
+            "Arial, Helvetica, sans-serif",
+          headingWeight: parsed.typography?.headingWeight || "600",
+          bodyWeight: parsed.typography?.bodyWeight || "400",
+        },
+        backgroundArt: {
+          gradientColors:
+            parsed.backgroundArt?.gradientColors || [
+              "rgba(34,211,238,0.07)",
+              "rgba(244,114,182,0.06)",
+              "rgba(255,255,255,0.02)",
+            ],
+          particleOpacity:
+            parsed.backgroundArt?.particleOpacity || "0.45",
+          scanlineOpacity:
+            parsed.backgroundArt?.scanlineOpacity || "0.95",
+        },
+      };
+      return { theme, rawResponse: text };
+    }
+    if (isValidThemeTokens(parsed)) {
+      return { theme: parsed, rawResponse: text };
+    }
+    return null;
+  } catch {
     return null;
   }
-  if (isValidThemeTokens(parsed)) return parsed;
-  return null;
 }
