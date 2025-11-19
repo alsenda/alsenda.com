@@ -343,7 +343,7 @@ function generateThemeFromDescription(description: string): ThemeTokens {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { description } = body;
+    const { description, useAI } = body;
 
     if (!description || typeof description !== "string") {
       return NextResponse.json(
@@ -352,8 +352,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let theme: ThemeTokens | null = null;
-    let usedAI = false;
+  let theme: ThemeTokens | null = null;
+  let usedAI = false;
+  const userDisabledAI = useAI === false; // explicit user toggle
     let method = "";
     let message = "";
     let aiError: string | null = null;
@@ -363,8 +364,9 @@ export async function POST(request: NextRequest) {
   // In test mode we always force the heuristic path to keep tests fast and offline.
   const isTest = process.env.NODE_ENV === 'test' || !!process.env.VITEST_WORKER_ID;
   const useMockAI = isTest || process.env.USE_MOCK_AI === 'true';
+  const shouldAttemptAI = !userDisabledAI && !useMockAI;
     
-    if (process.env.GOOGLEAI_API_KEY && !useMockAI) {
+    if (process.env.GOOGLEAI_API_KEY && shouldAttemptAI) {
       console.log("Attempting Google AI generation...");
       try {
         const result = await generateWithGoogleAI(description);
@@ -385,6 +387,9 @@ export async function POST(request: NextRequest) {
         console.error("Google AI generation failed:", errorMsg);
         aiError = `Google AI error: ${errorMsg}`;
       }
+    } else if (userDisabledAI) {
+      aiError = "AI generation disabled by user";
+      console.log("Skipping AI generation: user toggled AI off");
     } else if (useMockAI) {
       aiError = "AI generation disabled (USE_MOCK_AI=true in .env)";
       console.log("Skipping AI generation: USE_MOCK_AI is enabled or running under test mode");
@@ -436,6 +441,7 @@ export async function POST(request: NextRequest) {
           message,
           aiError: aiError || undefined, // Include AI error details if present
           aiResponse: aiResponse || undefined, // Include AI raw response if present
+          userDisabledAI: userDisabledAI || undefined,
         },
       },
       { status: 200 }
@@ -449,10 +455,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function isValidThemeTokens(obj: any): obj is ThemeTokens {
+function isValidThemeTokens(obj: unknown): obj is ThemeTokens {
   if (!obj || typeof obj !== 'object') return false;
-  if (!obj.colors) return false;
-  const c = obj.colors;
+  if (!('colors' in obj)) return false;
+  const c = (obj as { colors: { background?: unknown; surface?: unknown; foreground?: unknown; muted?: unknown; egaCyan?: unknown; egaMagenta?: unknown; egaWhite?: unknown } }).colors;
   return (
     typeof c.background === 'string' &&
     typeof c.surface === 'string' &&

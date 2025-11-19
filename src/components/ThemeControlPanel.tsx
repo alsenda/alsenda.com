@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useTheme } from "./ThemeProvider";
 import { generateTheme, type ThemeGenerationResult } from "@/lib/themeApi";
 
@@ -23,9 +23,33 @@ export default function ThemeControlPanel() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [generationMethod, setGenerationMethod] = useState<string | null>(null);
   const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [useAI, setUseAI] = useState(true);
+  const [configLoaded, setConfigLoaded] = useState(false);
+  const [hideAiToggle, setHideAiToggle] = useState(false);
   
   // Use ref to track if a generation is in flight (more reliable than state for fast clicks)
   const isGeneratingRef = useRef(false);
+
+  useEffect(() => {
+    // Fetch server-side config to determine if MOCK AI is enabled
+    const fetchConfig = async () => {
+      try {
+        const res = await fetch('/api/ai-config');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.useMockAI) {
+            setHideAiToggle(true);
+            setUseAI(false); // force heuristic when mock AI
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch AI config, defaulting to AI enabled');
+      } finally {
+        setConfigLoaded(true);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const handleGenerate = async () => {
     // Guard: prevent duplicate calls using ref (faster than state updates)
@@ -58,7 +82,7 @@ export default function ThemeControlPanel() {
       setGenerationStage("generating");
 
       // Call the API helper
-      const result: ThemeGenerationResult = await generateTheme(description);
+  const result: ThemeGenerationResult = await generateTheme(description, useAI);
 
       setGenerationStage("applying");
       await new Promise((resolve) => setTimeout(resolve, 400));
@@ -210,7 +234,7 @@ export default function ThemeControlPanel() {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap items-center">
           <button
             onClick={handleGenerate}
             disabled={isGenerating || !description.trim()}
@@ -226,6 +250,18 @@ export default function ThemeControlPanel() {
           >
             Reset to Default
           </button>
+          {!hideAiToggle && (
+            <label className="flex items-center gap-2 text-xs text-muted border border-cyan-400/30 rounded px-3 py-2 bg-background/40">
+              <input
+                type="checkbox"
+                checked={useAI}
+                disabled={isGenerating || !configLoaded}
+                onChange={(e) => setUseAI(e.target.checked)}
+                className="accent-cyan-400"
+              />
+              <span className="text-foreground">Use AI</span>
+            </label>
+          )}
         </div>
 
         {/* Status Indicator */}
@@ -236,6 +272,9 @@ export default function ThemeControlPanel() {
             <span>Using default CRT/EGA theme</span>
           )}
         </div>
+        {hideAiToggle && (
+          <div className="text-[10px] text-center text-muted mt-1">AI disabled (mock mode)</div>
+        )}
       </div>
     </div>
   );

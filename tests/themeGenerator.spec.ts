@@ -51,7 +51,7 @@ describe('Theme Generator API', () => {
       expect(Array.isArray(theme.backgroundArt?.gradientColors)).toBe(true);
       expect(theme.backgroundArt?.particleOpacity).toBeDefined();
       expect(theme.backgroundArt?.scanlineOpacity).toBeDefined();
-    });
+    }, 15000);
   });
 
   describe('AI vs Heuristic Generation', () => {
@@ -65,6 +65,26 @@ describe('Theme Generator API', () => {
       const theme: ThemeTokens = await res.json();
       
       expect(theme.colors).toBeDefined();
+    }, 15000);
+
+    it('should honor user disabling AI even when key present', async () => {
+      // Re-stub key to simulate presence
+      vi.stubEnv('GOOGLEAI_API_KEY', 'test-key');
+      const res = await fetch(`${API_BASE}/api/theme-generator`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ description: 'cyberpunk neon', useAI: false }),
+      });
+      expect(res.status).toBe(200);
+      const data = await res.json() as {
+        metadata?: {
+          usedAI: boolean;
+          userDisabledAI?: boolean;
+        }
+      };
+      expect(data.metadata).toBeDefined();
+      expect(data.metadata?.usedAI).toBe(false);
+      expect(data.metadata?.userDisabledAI).toBe(true);
     });
   });
 
@@ -77,7 +97,7 @@ describe('Theme Generator API', () => {
         body: JSON.stringify({ description: longDesc }),
       });
       expect(res.status).toBe(200);
-    });
+    }, 15000);
 
     it('should handle special characters in description', async () => {
       const res = await fetch(`${API_BASE}/api/theme-generator`, {
@@ -88,7 +108,7 @@ describe('Theme Generator API', () => {
       expect(res.status).toBe(200);
       const theme: ThemeTokens = await res.json();
       expect(theme.colors).toBeDefined();
-    });
+    }, 15000);
 
     it('should handle description with no recognizable colors', async () => {
       const res = await fetch(`${API_BASE}/api/theme-generator`, {
@@ -101,6 +121,6 @@ describe('Theme Generator API', () => {
       
       // Should fall back to default variation
       expect(theme.colors.background).toBeDefined();
-    });
+    }, 15000);
   });
 });

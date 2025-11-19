@@ -8,13 +8,14 @@ export type ThemeGenerationResult = {
     message?: string;
     aiError?: string; // If AI generation failed, this contains the error
     aiResponse?: string; // If AI was used, this contains the raw AI response
+    userDisabledAI?: boolean; // Whether the user explicitly disabled AI
   };
 };
 
 // Track the current request to prevent duplicates
 let currentRequest: AbortController | null = null;
 
-export async function generateTheme(description: string): Promise<ThemeGenerationResult> {
+export async function generateTheme(description: string, useAI: boolean = true): Promise<ThemeGenerationResult> {
   // Cancel any existing request
   if (currentRequest) {
     currentRequest.abort();
@@ -28,7 +29,7 @@ export async function generateTheme(description: string): Promise<ThemeGeneratio
     const res = await fetch("/api/theme-generator", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ description }),
+      body: JSON.stringify({ description, useAI }),
       signal, // Add abort signal
     });
     
@@ -48,6 +49,7 @@ export async function generateTheme(description: string): Promise<ThemeGeneratio
       message: undefined,
       aiError: undefined,
       aiResponse: undefined,
+      userDisabledAI: !useAI || undefined,
     };
 
     if (data?.theme?.colors?.background) {
