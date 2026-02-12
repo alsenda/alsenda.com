@@ -131,13 +131,13 @@ export default function ThemeControlPanel() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 border border-cyan-400/30 rounded-lg bg-surface/50 backdrop-blur-sm">
+    <div className="w-full max-w-2xl mx-auto p-6 border border-cyan-400/30 rounded-lg bg-surface/50 backdrop-blur-sm nb-panel nb-accent-yellow">
       <h2 className="text-2xl font-bold mb-4 text-cyan-400">
         AI Theme Shaper
       </h2>
 
       <p className="text-sm text-muted mb-4">
-        Describe your desired theme and let AI generate it for you.
+        Describe your desired theme. Neo‑Brutalist mode keeps borders/shadows black and uses cyan/magenta/yellow blocks.
       </p>
 
       <div className="space-y-4">
@@ -151,7 +151,7 @@ export default function ThemeControlPanel() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             disabled={isGenerating}
-            placeholder="e.g., 'light theme with blue and orange' or 'dark cyberpunk with neon purple'"
+            placeholder="e.g., 'neobrutalist with cyan magenta and yellow blocks'"
             className="w-full h-24 px-3 py-2 bg-background border border-cyan-400/30 rounded text-foreground placeholder:text-muted/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 disabled:opacity-50"
             rows={4}
           />
@@ -269,7 +269,7 @@ export default function ThemeControlPanel() {
           {isCustomTheme ? (
             <span className="text-cyan-400">Custom theme active</span>
           ) : (
-            <span>Using default CRT/EGA theme</span>
+            <span>Using default Neo-Brutalist theme</span>
           )}
         </div>
         {hideAiToggle && (

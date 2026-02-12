@@ -209,6 +209,13 @@ function detectMood(description: string): string | null {
 
 function generateThemeFromDescription(description: string): ThemeTokens {
   const lowerDesc = description.toLowerCase();
+
+  // Neo-brutalist shortcut: flat UI, black text, bold block accents
+  const isBrutalist =
+    lowerDesc.includes("brutalist") ||
+    lowerDesc.includes("neo-brutalist") ||
+    lowerDesc.includes("neobrutalist") ||
+    lowerDesc.includes("neo brutalist");
   
   // Check for mood presets first
   const mood = detectMood(lowerDesc);
@@ -221,6 +228,43 @@ function generateThemeFromDescription(description: string): ThemeTokens {
 
   // Extract colors from description
   const colors = extractColorsFromDescription(lowerDesc);
+
+  if (isBrutalist) {
+    const picked = colors.slice(0, 3);
+    const cyan = picked[0] || "#00a3ff";
+    const magenta = picked[1] || "#ff0099";
+    const yellow = picked[2] || "#fff3a6";
+
+    return {
+      colors: {
+        background: "#d9f0ff",
+        surface: "#ffffff",
+        foreground: "#111111",
+        muted: "#334155",
+        egaCyan: hexToRgb(cyan),
+        egaMagenta: hexToRgb(magenta),
+        egaWhite: "0,0,0",
+        egaYellow: hexToRgb(yellow),
+      },
+      effects: {
+        borderRadius: "0px",
+        shadowColor: "#000000",
+        shadowBlur: "0px",
+        glowIntensity: "0",
+        textShadow: "none",
+      },
+      typography: {
+        fontFamily: "Arial, Helvetica, sans-serif",
+        headingWeight: "800",
+        bodyWeight: "500",
+      },
+      backgroundArt: {
+        gradientColors: [],
+        particleOpacity: "0",
+        scanlineOpacity: "0",
+      },
+    };
+  }
   
   // Determine if it's a dark or light theme - be more explicit about detecting light
   const hasLightKeyword = lowerDesc.includes("light") || 
@@ -252,6 +296,7 @@ function generateThemeFromDescription(description: string): ThemeTokens {
         egaCyan: hexToRgb(primary),
         egaMagenta: hexToRgb(secondary),
         egaWhite: isDark ? "255,255,255" : "30,36,48", // Use dark color for "white" in light themes
+        egaYellow: lowerDesc.includes("yellow") || lowerDesc.includes("gold") || lowerDesc.includes("amber") ? hexToRgb("#eab308") : undefined,
       },
       effects: {
         borderRadius: "0.5rem",
@@ -288,6 +333,7 @@ function generateThemeFromDescription(description: string): ThemeTokens {
         egaCyan: "37,99,235", // blue
         egaMagenta: "168,85,247", // purple
         egaWhite: "30,36,48", // dark for light theme
+        egaYellow: "234,179,8", // optional warm accent
       },
       effects: {
         borderRadius: "0.5rem",
@@ -319,6 +365,7 @@ function generateThemeFromDescription(description: string): ThemeTokens {
       egaCyan: "34,211,238",
       egaMagenta: "244,114,182",
       egaWhite: "255,255,255",
+      egaYellow: "234,179,8",
     },
     effects: {
       borderRadius: "0.5rem",
@@ -496,7 +543,8 @@ Output ONLY valid JSON matching this structure (no markdown, no prose):
     "muted": "#hex",
     "egaCyan": "r,g,b",
     "egaMagenta": "r,g,b",
-    "egaWhite": "r,g,b"
+    "egaWhite": "r,g,b",
+    "egaYellow": "r,g,b"
   },
   "effects": {
     "glowIntensity": "0.5"
@@ -534,6 +582,7 @@ Rules:
           egaCyan: parsed.colors.egaCyan || "34,211,238",
           egaMagenta: parsed.colors.egaMagenta || "244,114,182",
           egaWhite: parsed.colors.egaWhite || "255,255,255",
+          egaYellow: parsed.colors.egaYellow || undefined,
         },
         effects: {
           borderRadius: parsed.effects?.borderRadius || "0.5rem",

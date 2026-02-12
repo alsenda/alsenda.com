@@ -1,5 +1,4 @@
-﻿import ThemeToggle from '@/components/ThemeToggle';
-import AppEmbed from '../components/AppEmbed';
+﻿import AppEmbed from '../components/AppEmbed';
 import ThemeControlPanel from '@/components/ThemeControlPanel';
 
 export default function Home() {
@@ -25,15 +24,15 @@ export default function Home() {
   ];
 
   return (
-  <div className="min-h-screen w-full bg-black text-white font-mono">
-  {/* particle canvas sits behind gradient + scanlines */}
+  <div className="min-h-screen w-full bg-black text-white font-mono pb-8">
+  {/* particle canvas sits behind gradient + scanlines (disabled in neo theme via CSS/JS) */}
   <canvas id="particle-canvas" className="particle-canvas" aria-hidden="true"></canvas>
-  {/* visual overlay for scanlines/CRT */}
+  {/* visual overlay for scanlines/CRT (disabled in neo theme via CSS) */}
   <div className="overlay-scanlines w-full" aria-hidden="true" />
       {/* Navigation */}
-      <nav className="border-b-4 border-cyan-400 bg-black sticky top-0 z-50 shadow-lg shadow-cyan-500/50 w-full">
+      <nav className="border-b-4 border-cyan-400 bg-black sticky top-4 z-50 shadow-lg shadow-cyan-500/50 w-full nb-header nb-accent-yellow mx-0 sm:mx-0 mt-4">
         <div className="max-w-[1200px] mx-auto w-full px-4 sm:px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: "0 0 15px rgba(244, 114, 182, 0.8)"}}>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-wider">
             alsenda<span className="hero-caret">▌</span>
           </h1>
           <ul className="flex gap-4 sm:gap-6 lg:gap-8 text-sm sm:text-base">
@@ -61,7 +60,7 @@ export default function Home() {
 
       {/* About Section */}
   <section id="about" className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <h3 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-pink-400 tracking-wider" style={{textShadow: "0 0 10px rgba(244, 114, 182, 0.8)"}}>
+        <h3 className="text-xl sm:text-2xl font-bold mb-6 sm:mb-8 text-pink-400 tracking-wider">
           [ ABOUT THIS PORTFOLIO ]
         </h3>
         <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
@@ -71,7 +70,7 @@ export default function Home() {
               &gt; central hub for multiple web applications.
             </p>
           </div>
-          <div className="bg-black border-2 p-4 sm:p-6" style={{boxShadow: "0 0 10px rgba(255, 255, 255, 0.3)"}}>
+          <div className="bg-black border-2 p-4 sm:p-6 nb-panel">
             <h4 className="font-bold mb-4 text-white tracking-wider text-sm sm:text-base">[ TECH STACK ]</h4>
             <ul className="space-y-2 text-cyan-400 font-mono text-xs sm:text-sm">
               <li className="text-magenta-400">&gt; Next.js 14+ (React Framework)</li>
@@ -89,7 +88,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="border-t-4 border-magenta-500 bg-black py-6 sm:py-8 mt-12 sm:mt-16">
+      <footer id="contact" className="border-t-4 border-magenta-500 bg-black py-6 sm:py-8 mt-12 sm:mt-16 nb-panel nb-accent-magenta mb-4">
         <div className="max-w-[1200px] mx-auto w-full px-4 sm:px-6">
           <div className="text-center text-cyan-400 font-mono text-xs sm:text-sm mb-4">
             <a href="https://cv.alsenda.com" rel="noindex,nofollow" className="hover:text-pink-400 transition" target='_blank'>

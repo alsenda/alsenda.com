@@ -40,6 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.style.setProperty("--ega-cyan", theme.colors.egaCyan);
     root.style.setProperty("--ega-magenta", theme.colors.egaMagenta);
     root.style.setProperty("--ega-white", theme.colors.egaWhite);
+    root.style.setProperty("--ega-yellow", theme.colors.egaYellow || "255,243,166");
 
     // Apply effects if provided
     if (theme.effects) {

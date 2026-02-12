@@ -38,7 +38,7 @@ export default function RootLayout({
         {/* Early theme application to avoid flash of default before hydration */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `!function(){try{var k='alsenda-theme';var v=localStorage.getItem(k);if(!v){var m=document.cookie.match(/(?:^|; )alsenda-theme=([^;]+)/);v=m&&m[1];}if(!v){v='ega';}document.documentElement.setAttribute('data-theme', v);}catch(e){}}();`
+            __html: `!function(){try{var k='alsenda-theme';var v=localStorage.getItem(k);if(!v){var m=document.cookie.match(/(?:^|; )alsenda-theme=([^;]+)/);v=m&&m[1];}if(!v){v='neo';}document.documentElement.setAttribute('data-theme', v);}catch(e){}}();`
           }}
         />
       </head>
@@ -228,8 +228,18 @@ export default function RootLayout({
       }catch(e){}
       // always start these regardless of 3D flag
       startHeroTypewriter();
-      initParticles();
-      attachTiltCards();
+
+      // Neo-brutalist theme disables CRT background art
+      try {
+        const t = document.documentElement.getAttribute('data-theme') || 'neo';
+        if (t !== 'neo') {
+          initParticles();
+          attachTiltCards();
+        }
+      } catch(e) {
+        initParticles();
+        attachTiltCards();
+      }
       initReduceMotionToggle();
     }
     if (document.readyState === 'complete' || document.readyState === 'interactive'){

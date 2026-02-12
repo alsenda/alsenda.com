@@ -13,17 +13,17 @@ export default function App2() {
       </div>
 
       <div className="text-center">
-        <h1 className="text-5xl font-bold mb-6">Application 2</h1>
-        <p className="text-xl text-cyan-200 mb-8">
+        <h1 className="text-5xl font-bold mb-6 text-pink-400">Application 2</h1>
+        <p className="text-xl text-cyan-300 mb-8">
           This is your second application running on the app2 subdomain.
         </p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mt-16">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-cyan-800 border border-cyan-700 p-6">
+          <div key={i} className="bg-black border border-cyan-400 p-6 nb-panel">
             <h3 className="text-lg font-semibold mb-2">Feature {i}</h3>
-            <p className="text-cyan-200">
+            <p className="text-cyan-300">
               Add your application features and content here.
             </p>
           </div>

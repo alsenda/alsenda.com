@@ -129,13 +129,13 @@ export default function LiveChat(): React.ReactElement {
     <div className="bg-black text-white font-mono">
       <div className="max-w-none mx-auto px-6 pt-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
+          <h2 className="text-4xl font-bold text-pink-400 tracking-wider glitch">
             <span style={{color: 'rgb(var(--ega-cyan))'}}>Live</span><span style={{color: 'rgb(var(--ega-magenta))'}}> Chat</span><span style={{color: 'rgb(var(--ega-white))'}}> (24h)</span>
           </h2>
         </div>
       </div>
 
-      <div className="h-48 overflow-auto mb-3 p-2 bg-gray-900 text-sm">
+      <div className="h-48 overflow-auto mb-3 p-2 bg-gray-900 text-sm nb-panel">
         {messages.length === 0 ? (
           <div className="text-slate-300">No messages yet</div>
         ) : (
@@ -154,7 +154,7 @@ export default function LiveChat(): React.ReactElement {
       </div>
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-          <div className="bg-black border border-cyan-400 p-4">
+          <div className="bg-black border border-cyan-400 p-4 nb-panel">
             <div className="mb-2 text-white">Choose a username (letters and numbers only):</div>
             <input className="p-2 mb-2 bg-black border border-cyan-400 text-white" value={modalValue} onChange={e => setModalValue(e.target.value)} />
             <div className="flex gap-2 justify-end">

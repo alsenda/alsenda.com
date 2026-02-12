@@ -9,6 +9,7 @@ type ThemeOption = {
 };
 
 const presetThemes: ThemeOption[] = [
+  { name: 'NEO', value: 'neo' },
   { name: 'EGA', value: 'ega' },
   { name: 'CRT', value: 'crt-green' },
   { name: 'TRON', value: 'tron' },
