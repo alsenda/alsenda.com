@@ -101,6 +101,40 @@ body {
   font-family: var(--theme-font-family, Arial, Helvetica, sans-serif);
 }
 
+/* Global animated theme switching (enabled briefly via data-theme-transition) */
+html[data-theme-transition='true'] *,
+html[data-theme-transition='true'] *::before,
+html[data-theme-transition='true'] *::after {
+  transition:
+    background-color 320ms ease,
+    color 320ms ease,
+    border-color 320ms ease,
+    box-shadow 320ms ease,
+    text-shadow 320ms ease,
+    opacity 320ms ease,
+    filter 320ms ease,
+    transform 320ms ease !important;
+}
+
+html[data-theme-transition='true'] body::before,
+html[data-theme-transition='true'] body::after,
+html[data-theme-transition='true'] .overlay-scanlines,
+html[data-theme-transition='true'] .particle-canvas {
+  transition: opacity 320ms ease, filter 320ms ease, background 320ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-transition='true'] *,
+  html[data-theme-transition='true'] *::before,
+  html[data-theme-transition='true'] *::after,
+  html[data-theme-transition='true'] body::before,
+  html[data-theme-transition='true'] body::after,
+  html[data-theme-transition='true'] .overlay-scanlines,
+  html[data-theme-transition='true'] .particle-canvas {
+    transition: none !important;
+  }
+}
+
 /* Map some Tailwind classes to our palette so existing markup stays unchanged */
 .bg-black { background-color: var(--background) !important; }
 .bg-gray-900 { background-color: var(--surface) !important; }
@@ -555,9 +589,12 @@ html[data-three-d="true"] h6:hover {
 
 /* Theme and motion toggle styles */
 .theme-toggle {
-  right: 8px;
-  top: 8px;
-  z-index: 9999;
+  position: fixed;
+  right: 12px;
+  top: 12px;
+  display: inline-block;
+  min-width: 92px;
+  z-index: 10000;
   background: rgba(var(--ega-white), 0.06);
   color: rgb(var(--ega-white));
   border: 1px solid rgba(var(--ega-white), 0.08);
@@ -579,8 +616,8 @@ html[data-three-d="true"] h6:hover {
 
 @media (min-width: 640px) {
   .theme-toggle {
-    right: 12px;
-    top: 12px;
+    right: 16px;
+    top: 16px;
     padding: 8px 12px;
     font-size: 13px;
   }

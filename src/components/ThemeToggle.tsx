@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { THEME_STORAGE_KEY } from '@/lib/theme';
+import { useTheme } from '@/components/ThemeProvider';
 
 type ThemeOption = {
   name: string;
@@ -17,7 +18,8 @@ const presetThemes: ThemeOption[] = [
 ];
 
 export default function ThemeToggle() {
-  const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
+  const { setPresetTheme } = useTheme();
+  const [currentTheme, setCurrentTheme] = useState('neo');
   const [mounted, setMounted] = useState(false);
   const [hasCustomTheme, setHasCustomTheme] = useState(false);
   const [themes, setThemes] = useState<ThemeOption[]>(presetThemes);
@@ -33,9 +35,9 @@ export default function ThemeToggle() {
     setThemes(themeList);
     const saved = localStorage.getItem('alsenda-theme');
     if (saved) {
-      const index = themeList.findIndex(t => t.value === saved);
-      if (index !== -1) {
-        setCurrentThemeIndex(index);
+      const exists = themeList.some(t => t.value === saved);
+      if (exists) {
+        setCurrentTheme(saved);
         document.documentElement.setAttribute('data-theme', saved);
       }
     }
@@ -61,40 +63,43 @@ export default function ThemeToggle() {
     };
   }, [hasCustomTheme]);
 
-  const cycleTheme = () => {
-    const nextIndex = (currentThemeIndex + 1) % themes.length;
-    const nextTheme = themes[nextIndex];
-    setCurrentThemeIndex(nextIndex);
-    if (nextTheme.value !== 'custom') {
-      document.documentElement.setAttribute('data-theme', nextTheme.value);
-    }
-    try {
-      localStorage.setItem('alsenda-theme', nextTheme.value);
-    } catch(e) {}
-    try {
-      document.cookie = `alsenda-theme=${nextTheme.value}; path=/; max-age=31536000; SameSite=Lax`;
-    } catch(e) {}
-    if (nextTheme.value === 'custom') {
+  const selectTheme = (value: string) => {
+    setCurrentTheme(value);
+    if (value === 'custom') {
+      try {
+        localStorage.setItem('alsenda-theme', value);
+      } catch(e) {}
+      try {
+        document.cookie = `alsenda-theme=${value}; path=/; max-age=31536000; SameSite=Lax`;
+      } catch(e) {}
       window.location.reload();
+      return;
     }
+
+    setPresetTheme(value);
   };
 
   if (!mounted) {
     return (
-      <button className="theme-toggle" aria-label="Switch theme" disabled>
-        {presetThemes[0].name}
-      </button>
+      <select className="theme-toggle" aria-label="Select theme" disabled value="neo">
+        <option value="neo">NEO</option>
+      </select>
     );
   }
 
   return (
-    <button 
+    <select
       className="theme-toggle" 
-      onClick={cycleTheme}
-      aria-label={`Switch theme (current: ${themes[currentThemeIndex].name})`}
-      title="Click to switch theme"
+      value={currentTheme}
+      onChange={(e) => selectTheme(e.target.value)}
+      aria-label="Select theme"
+      title="Theme"
     >
-      {themes[currentThemeIndex].name}
-    </button>
+      {themes.map((theme) => (
+        <option key={theme.value} value={theme.value}>
+          {theme.name}
+        </option>
+      ))}
+    </select>
   );
 }

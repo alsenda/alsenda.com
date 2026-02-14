@@ -1,5 +1,6 @@
 ﻿import AppEmbed from '../components/AppEmbed';
 import ThemeControlPanel from '@/components/ThemeControlPanel';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function Home() {
   const applications = [
@@ -46,9 +47,9 @@ export default function Home() {
                 [ABOUT]
               </a>
             </li>
-            {/* <li>
+            <li className="shrink-0">
               <ThemeToggle />
-            </li> */}
+            </li>
           </ul>
         </div>
       </nav>

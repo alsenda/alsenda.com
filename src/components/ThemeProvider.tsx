@@ -9,6 +9,7 @@ type ThemeContextType = {
   isCustomTheme: boolean;
   applyTheme: (theme: ThemeTokens) => void;
   resetTheme: () => void;
+  setPresetTheme: (themeName: string) => void;
   setGenerationStage: (stage: GenerationStage) => void;
 };
 
@@ -19,6 +20,54 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [generationStage, setGenerationStage] = useState<GenerationStage>("idle");
   const [isCustomTheme, setIsCustomTheme] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  const runThemeTransition = useCallback((apply: () => void) => {
+    if (typeof document === "undefined") {
+      apply();
+      return;
+    }
+
+    const root = document.documentElement;
+    root.setAttribute("data-theme-transition", "true");
+
+    requestAnimationFrame(() => {
+      apply();
+      window.setTimeout(() => {
+        root.removeAttribute("data-theme-transition");
+      }, 420);
+    });
+  }, []);
+
+  const clearCustomThemeVars = useCallback(() => {
+    if (typeof document === "undefined") return;
+
+    const root = document.documentElement;
+    const cssVars = [
+      "--background",
+      "--surface",
+      "--foreground",
+      "--muted",
+      "--ega-cyan",
+      "--ega-magenta",
+      "--ega-white",
+      "--ega-yellow",
+      "--theme-border-radius",
+      "--theme-shadow-color",
+      "--theme-shadow-blur",
+      "--theme-glow-intensity",
+      "--theme-text-shadow",
+      "--theme-font-family",
+      "--theme-heading-weight",
+      "--theme-body-weight",
+      "--theme-particle-opacity",
+      "--theme-scanline-opacity",
+      "--theme-gradient",
+    ];
+
+    for (const cssVar of cssVars) {
+      root.style.removeProperty(cssVar);
+    }
+  }, []);
 
   /**
    * Apply theme tokens to the document root CSS variables
@@ -93,34 +142,57 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
    * Apply a new theme
    */
   const applyTheme = useCallback((theme: ThemeTokens) => {
-    setCurrentTheme(theme);
-    applyThemeToDom(theme);
-    
-    // Save to localStorage
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(theme));
-      setIsCustomTheme(true);
-    } catch (error) {
-      console.error("Failed to save theme to localStorage:", error);
-    }
-  }, [applyThemeToDom]);
+    runThemeTransition(() => {
+      setCurrentTheme(theme);
+      applyThemeToDom(theme);
+      document.documentElement.setAttribute("data-theme", "custom");
+      
+      // Save to localStorage
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(theme));
+        localStorage.setItem("alsenda-theme", "custom");
+        document.cookie = "alsenda-theme=custom; path=/; max-age=31536000; SameSite=Lax";
+        setIsCustomTheme(true);
+      } catch (error) {
+        console.error("Failed to save theme to localStorage:", error);
+      }
+    });
+  }, [applyThemeToDom, runThemeTransition]);
+
+  const setPresetTheme = useCallback((themeName: string) => {
+    runThemeTransition(() => {
+      clearCustomThemeVars();
+      document.documentElement.setAttribute("data-theme", themeName);
+      try {
+        localStorage.setItem("alsenda-theme", themeName);
+        document.cookie = `alsenda-theme=${themeName}; path=/; max-age=31536000; SameSite=Lax`;
+      } catch (error) {
+        console.error("Failed to save preset theme:", error);
+      }
+    });
+  }, [clearCustomThemeVars, runThemeTransition]);
 
   /**
    * Reset to default theme
    */
   const resetTheme = useCallback(() => {
-    setCurrentTheme(DEFAULT_THEME);
-    applyThemeToDom(DEFAULT_THEME);
-    setIsCustomTheme(false);
-    setGenerationStage("idle");
-    
-    // Clear from localStorage
-    try {
-      localStorage.removeItem(THEME_STORAGE_KEY);
-    } catch (error) {
-      console.error("Failed to remove theme from localStorage:", error);
-    }
-  }, [applyThemeToDom]);
+    runThemeTransition(() => {
+      setCurrentTheme(DEFAULT_THEME);
+      clearCustomThemeVars();
+      document.documentElement.setAttribute("data-theme", "neo");
+      setIsCustomTheme(false);
+      setGenerationStage("idle");
+      
+      // Clear custom theme from localStorage
+      try {
+        localStorage.removeItem(THEME_STORAGE_KEY);
+        localStorage.setItem("alsenda-theme", "neo");
+        document.cookie = "alsenda-theme=neo; path=/; max-age=31536000; SameSite=Lax";
+      } catch (error) {
+        console.error("Failed to remove theme from localStorage:", error);
+      }
+    });
+  }, [clearCustomThemeVars, runThemeTransition]);
 
   /**
    * Load theme from localStorage on mount
@@ -129,21 +201,26 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
     
     try {
+      const selectedTheme = localStorage.getItem("alsenda-theme") || "neo";
+      document.documentElement.setAttribute("data-theme", selectedTheme);
       const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-      if (savedTheme) {
+      if (savedTheme && selectedTheme === "custom") {
         const parsedTheme = JSON.parse(savedTheme) as ThemeTokens;
         setCurrentTheme(parsedTheme);
         applyThemeToDom(parsedTheme);
         setIsCustomTheme(true);
       } else {
-        // Apply default theme on first load
-        applyThemeToDom(DEFAULT_THEME);
+        // Use stylesheet-driven preset values for preset themes
+        clearCustomThemeVars();
+        setCurrentTheme(DEFAULT_THEME);
+        setIsCustomTheme(!!savedTheme);
       }
     } catch (error) {
       console.error("Failed to load theme from localStorage:", error);
-      applyThemeToDom(DEFAULT_THEME);
+      clearCustomThemeVars();
+      document.documentElement.setAttribute("data-theme", "neo");
     }
-  }, [applyThemeToDom]);
+  }, [applyThemeToDom, clearCustomThemeVars]);
 
   // Don't render children until mounted to avoid hydration mismatch
   if (!mounted) {
@@ -158,6 +235,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         isCustomTheme,
         applyTheme,
         resetTheme,
+        setPresetTheme,
         setGenerationStage,
       }}
     >
