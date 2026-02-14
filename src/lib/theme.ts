@@ -11,6 +11,7 @@ export type ThemeTokens = {
     egaCyan: string; // RGB values like "34,211,238"
     egaMagenta: string;
     egaWhite: string;
+    egaYellow?: string; // Optional RGB values like "255,243,166"
   };
   effects?: {
     borderRadius?: string;
@@ -41,34 +42,37 @@ export type GenerationStage =
   | "error";
 
 /**
- * Default CRT/EGA retro theme - extracted from current globals.css
+ * Default Neo-Brutalist theme.
+ * This is applied by ThemeProvider on mount, so it should match the intended
+ * site-wide default look to avoid a flash of another style during hydration.
  */
 export const DEFAULT_THEME: ThemeTokens = {
   colors: {
-    background: "#222326",
-    surface: "#2b2b2d",
-    foreground: "#e6e6e6",
-    muted: "#9aa0a6",
-    egaCyan: "34,211,238",
-    egaMagenta: "244,114,182",
-    egaWhite: "255,255,255",
+    background: "#d9f0ff", // powder blue
+    surface: "#ffffff", // paper
+    foreground: "#111111", // ink
+    muted: "#334155", // slate-ish
+    egaCyan: "0,163,255", // bold cyan accent
+    egaMagenta: "255,0,153", // hot magenta accent
+    egaWhite: "0,0,0", // map 'white' utility classes to ink in light neo theme
+    egaYellow: "255,243,166", // warm brutalist yellow
   },
   effects: {
-    borderRadius: "0.5rem",
-    shadowColor: "rgba(0,0,0,0.6)",
-    shadowBlur: "20px",
-    glowIntensity: "0.8",
-    textShadow: "0 0 10px rgba(34,211,238,0.8), 0 0 24px rgba(244,114,182,0.35)",
+    borderRadius: "0px",
+    shadowColor: "#111111",
+    shadowBlur: "0px",
+    glowIntensity: "0",
+    textShadow: "none",
   },
   typography: {
     fontFamily: "Arial, Helvetica, sans-serif",
-    headingWeight: "600",
-    bodyWeight: "400",
+    headingWeight: "800",
+    bodyWeight: "500",
   },
   backgroundArt: {
-    gradientColors: ["rgba(34,211,238,0.07)", "rgba(244,114,182,0.06)", "rgba(255,255,255,0.02)"],
-    particleOpacity: "0.45",
-    scanlineOpacity: "0.95",
+    gradientColors: [],
+    particleOpacity: "0",
+    scanlineOpacity: "0",
   },
 };
 

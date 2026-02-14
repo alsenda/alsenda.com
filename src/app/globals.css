@@ -1,14 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Primary palette (EGA-inspired) */
-  --background: #222326; /* dark charcoal */
-  --surface: #2b2b2d;
-  --foreground: #e6e6e6; /* main text */
-  --muted: #9aa0a6; /* secondary text */
-  --ega-cyan: 34,211,238; /* stored as rgb components for rgba usage */
-  --ega-magenta: 244,114,182;
-  --ega-white: 255,255,255;
+  /* Default palette (Neo-Brutalist) */
+  --background: #d9f0ff; /* powder blue */
+  --surface: #ffffff; /* paper */
+  --foreground: #111111; /* ink */
+  --muted: #334155; /* slate-ish */
+  --ega-cyan: 0,163,255; /* stored as rgb components for rgba usage */
+  --ega-magenta: 255,0,153;
+  --ega-white: 0,0,0; /* map "text-white" etc to ink in this light default */
+  --ega-yellow: 255,243,166; /* brutalist yellow accent */
+
+  /* Neo-Brutalist primitives */
+  --nb-border: 4px;
+  --nb-shadow-x: 8px;
+  --nb-shadow-y: 8px;
+  --nb-panel: #ffffff;
+  --nb-ink: #000000;
+  --nb-header: rgb(var(--ega-yellow));
 }
 
 /* AI Theme Shaper - Smooth transitions for theme changes (scoped to avoid conflicts) */
@@ -40,11 +49,40 @@ html[data-theme='ega'] {
   --ega-cyan: 34,211,238;
   --ega-magenta: 244,114,182;
   --ega-white: 255,255,255;
+
+  /* Keep neo primitives neutral in non-neo themes */
+  --nb-border: 2px;
+  --nb-shadow-x: 0px;
+  --nb-shadow-y: 0px;
+  --nb-panel: var(--surface);
+  --nb-header: var(--surface);
+}
+
+/* ========================================
+   NEO-BRUTALIST THEME (site-wide default)
+   ======================================== */
+html[data-theme='neo'] {
+  --background: #d9f0ff;
+  --surface: #ffffff;
+  --foreground: #111111;
+  --muted: #334155;
+  --ega-cyan: 0,163,255;
+  --ega-magenta: 255,0,153;
+  --ega-white: 0,0,0;
+  --ega-yellow: 255,243,166;
+  --nb-border: 4px;
+  --nb-shadow-x: 8px;
+  --nb-shadow-y: 8px;
+  --nb-panel: #ffffff;
+  --nb-ink: #000000;
+  --nb-header: rgb(var(--ega-yellow));
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -60,7 +98,41 @@ html[data-theme='ega'] {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--theme-font-family, Arial, Helvetica, sans-serif);
+}
+
+/* Global animated theme switching (enabled briefly via data-theme-transition) */
+html[data-theme-transition='true'] *,
+html[data-theme-transition='true'] *::before,
+html[data-theme-transition='true'] *::after {
+  transition:
+    background-color 320ms ease,
+    color 320ms ease,
+    border-color 320ms ease,
+    box-shadow 320ms ease,
+    text-shadow 320ms ease,
+    opacity 320ms ease,
+    filter 320ms ease,
+    transform 320ms ease !important;
+}
+
+html[data-theme-transition='true'] body::before,
+html[data-theme-transition='true'] body::after,
+html[data-theme-transition='true'] .overlay-scanlines,
+html[data-theme-transition='true'] .particle-canvas {
+  transition: opacity 320ms ease, filter 320ms ease, background 320ms ease !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-theme-transition='true'] *,
+  html[data-theme-transition='true'] *::before,
+  html[data-theme-transition='true'] *::after,
+  html[data-theme-transition='true'] body::before,
+  html[data-theme-transition='true'] body::after,
+  html[data-theme-transition='true'] .overlay-scanlines,
+  html[data-theme-transition='true'] .particle-canvas {
+    transition: none !important;
+  }
 }
 
 /* Map some Tailwind classes to our palette so existing markup stays unchanged */
@@ -155,6 +227,18 @@ body::after {
   pointer-events: none;
 }
 
+/* Neo theme disables CRT background art and glow */
+html[data-theme='neo'] body::before,
+html[data-theme='neo'] body::after {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+html[data-theme='neo'] .overlay-scanlines,
+html[data-theme='neo'] .particle-canvas {
+  display: none !important;
+}
+
 /* Neon link glow on hover */
 .neon-link {
   transition: text-shadow 220ms ease, color 160ms ease;
@@ -197,6 +281,165 @@ body::after {
   transform: perspective(900px) rotateX(calc(var(--tcy) * 6deg)) rotateY(calc(var(--tcx) * -8deg)) translateZ(0);
 }
 .tilt-card:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+
+/* Neo-brutalist core look */
+html[data-theme='neo'] a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+html[data-theme='neo'] a:hover {
+  color: rgb(var(--ega-magenta));
+}
+
+html[data-theme='neo'] h1,
+html[data-theme='neo'] h2,
+html[data-theme='neo'] h3,
+html[data-theme='neo'] h4,
+html[data-theme='neo'] h5,
+html[data-theme='neo'] h6 {
+  text-shadow: none !important;
+  transform: none !important;
+  letter-spacing: 0.02em;
+}
+
+/* Neo: keep body copy always ink-black */
+html[data-theme='neo'] p {
+  color: var(--nb-ink) !important;
+}
+
+/* Neo: prefer accents as backgrounds, not text */
+html[data-theme='neo'] .text-white,
+html[data-theme='neo'] .text-cyan-300,
+html[data-theme='neo'] .text-cyan-400,
+html[data-theme='neo'] .text-pink-400,
+html[data-theme='neo'] .text-magenta-400,
+html[data-theme='neo'] .text-slate-300,
+html[data-theme='neo'] .text-slate-400,
+html[data-theme='neo'] .text-zinc-400 {
+  color: var(--nb-ink) !important;
+}
+
+html[data-theme='neo'] .tilt-card {
+  transform: none !important;
+  transition: transform 0s, box-shadow 120ms ease, background-color 120ms ease, border-color 120ms ease;
+  background-color: var(--nb-panel) !important;
+  border: var(--nb-border) solid var(--nb-ink) !important;
+  box-shadow: var(--nb-shadow-x) var(--nb-shadow-y) 0 var(--nb-ink) !important;
+}
+
+html[data-theme='neo'] .tilt-card.nb-accent-cyan {
+  background-color: rgb(var(--ega-cyan)) !important;
+}
+html[data-theme='neo'] .tilt-card.nb-accent-magenta {
+  background-color: rgb(var(--ega-magenta)) !important;
+}
+html[data-theme='neo'] .tilt-card.nb-accent-yellow {
+  background-color: rgb(var(--ega-yellow)) !important;
+}
+html[data-theme='neo'] .tilt-card:hover {
+  box-shadow: calc(var(--nb-shadow-x) + 2px) calc(var(--nb-shadow-y) + 2px) 0 var(--nb-ink) !important;
+}
+
+html[data-theme='neo'] .hero-caret {
+  display: none;
+}
+
+/* Neo: flatten common translucent black surfaces into panels */
+html[data-theme='neo'] .bg-black\/40,
+html[data-theme='neo'] .bg-black\/50,
+html[data-theme='neo'] .bg-black\/60,
+html[data-theme='neo'] .bg-black\/80 {
+  background-color: var(--nb-panel) !important;
+}
+
+/* Neo: remove blur + rounding utilities commonly used in the control panel */
+html[data-theme='neo'] .backdrop-blur-sm {
+  backdrop-filter: none !important;
+}
+html[data-theme='neo'] .rounded,
+html[data-theme='neo'] .rounded-sm,
+html[data-theme='neo'] .rounded-md,
+html[data-theme='neo'] .rounded-lg,
+html[data-theme='neo'] .rounded-xl,
+html[data-theme='neo'] .rounded-2xl,
+html[data-theme='neo'] .rounded-3xl,
+html[data-theme='neo'] .rounded-full {
+  border-radius: 0 !important;
+}
+
+html[data-theme='neo'] .nb-panel {
+  background: var(--nb-panel);
+  border: var(--nb-border) solid var(--nb-ink);
+  box-shadow: var(--nb-shadow-x) var(--nb-shadow-y) 0 var(--nb-ink);
+}
+
+html[data-theme='neo'] .nb-accent-cyan {
+  background-color: rgb(var(--ega-cyan)) !important;
+}
+html[data-theme='neo'] .nb-accent-magenta {
+  background-color: rgb(var(--ega-magenta)) !important;
+}
+html[data-theme='neo'] .nb-accent-yellow {
+  background-color: rgb(var(--ega-yellow)) !important;
+}
+
+html[data-theme='neo'] .nb-header {
+  background-color: var(--nb-header) !important;
+  border: var(--nb-border) solid var(--nb-ink) !important;
+  box-shadow: var(--nb-shadow-x) var(--nb-shadow-y) 0 var(--nb-ink) !important;
+}
+
+html[data-theme='neo'] button,
+html[data-theme='neo'] input,
+html[data-theme='neo'] select,
+html[data-theme='neo'] textarea {
+  border-radius: 0 !important;
+}
+
+html[data-theme='neo'] input,
+html[data-theme='neo'] select,
+html[data-theme='neo'] textarea {
+  background: var(--nb-panel) !important;
+  color: var(--foreground) !important;
+  border: var(--nb-border) solid var(--nb-ink) !important;
+  box-shadow: 4px 4px 0 var(--nb-ink) !important;
+}
+
+html[data-theme='neo'] button {
+  background: var(--nb-panel);
+  color: var(--foreground);
+  border: var(--nb-border) solid var(--nb-ink);
+  box-shadow: 4px 4px 0 var(--nb-ink);
+}
+html[data-theme='neo'] button:hover {
+  background: rgb(var(--ega-cyan));
+}
+html[data-theme='neo'] button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+html[data-theme='neo'] button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--nb-ink);
+}
+
+/* Neo: make fixed toggles match the new style */
+html[data-theme='neo'] .theme-toggle,
+html[data-theme='neo'] .motion-toggle {
+  background: var(--nb-panel);
+  color: var(--foreground);
+  border: var(--nb-border) solid var(--foreground);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--foreground);
+  backdrop-filter: none;
+}
+html[data-theme='neo'] .theme-toggle:hover {
+  background: rgb(var(--ega-magenta));
+  border-color: var(--foreground);
+  box-shadow: 4px 4px 0 var(--foreground);
+}
 
 /* Header glitch animation */
 @keyframes headerGlitch {
@@ -346,9 +589,12 @@ html[data-three-d="true"] h6:hover {
 
 /* Theme and motion toggle styles */
 .theme-toggle {
-  right: 8px;
-  top: 8px;
-  z-index: 9999;
+  position: fixed;
+  right: 12px;
+  top: 12px;
+  display: inline-block;
+  min-width: 92px;
+  z-index: 10000;
   background: rgba(var(--ega-white), 0.06);
   color: rgb(var(--ega-white));
   border: 1px solid rgba(var(--ega-white), 0.08);
@@ -370,8 +616,8 @@ html[data-three-d="true"] h6:hover {
 
 @media (min-width: 640px) {
   .theme-toggle {
-    right: 12px;
-    top: 12px;
+    right: 16px;
+    top: 16px;
     padding: 8px 12px;
     font-size: 13px;
   }

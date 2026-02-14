@@ -93,7 +93,7 @@ export default function AppWizard(): React.ReactElement {
     <div className="bg-black text-white font-mono w-full">
       <div className="w-full px-4 sm:px-6 py-4 sm:py-6">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-3 sm:gap-0">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-400 tracking-wider glitch" style={{textShadow: '0 0 15px rgba(244, 114, 182, 0.8)'}}>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-pink-400 tracking-wider glitch">
             <span style={{color: 'rgb(var(--ega-cyan))'}}>Create</span><span style={{color: 'rgb(var(--ega-magenta))'}}> App</span><span style={{color: 'rgb(var(--ega-white))'}}> Wizard</span>
           </h2>
           <div>
@@ -103,7 +103,7 @@ export default function AppWizard(): React.ReactElement {
           </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="bg-black/60 p-3 sm:p-4 border border-cyan-400">
+          <div className="bg-black/60 p-3 sm:p-4 border border-cyan-400 nb-panel">
             <div className="space-y-3">
               <label className="block text-xs text-slate-300">Frontend framework</label>
               <select value={cfg.frontend} onChange={e => setCfg({ ...cfg, frontend: e.target.value as AppConfig['frontend'] })} className="w-full p-2 bg-black border text-sm">
@@ -145,7 +145,7 @@ export default function AppWizard(): React.ReactElement {
             </div>
           </div>
 
-          <div className="bg-black/60 p-3 sm:p-4 border border-magenta-500">
+          <div className="bg-black/60 p-3 sm:p-4 border border-magenta-500 nb-panel">
             <h3 className="text-xs sm:text-sm text-slate-300 mb-2">Architecture summary</h3>
             <pre className="text-xs whitespace-pre-wrap font-mono p-2 bg-black/40 overflow-x-auto">{result.summary}</pre>
             <h3 className="text-xs sm:text-sm text-slate-300 mt-3 mb-2">Folder tree</h3>
